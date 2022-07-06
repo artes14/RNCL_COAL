@@ -59,6 +59,8 @@
             this.tileRFID = new MetroFramework.Controls.MetroTile();
             this.tileMain = new MetroFramework.Controls.MetroTile();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lbl_progress2 = new System.Windows.Forms.Label();
+            this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.metroTile9 = new MetroFramework.Controls.MetroTile();
             this.metroTile8 = new MetroFramework.Controls.MetroTile();
             this.metroTile7 = new MetroFramework.Controls.MetroTile();
@@ -132,7 +134,7 @@
             this.txt_folder = new System.Windows.Forms.TextBox();
             this.txt_downloadfile = new System.Windows.Forms.TextBox();
             this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
+            this.btn_upload = new System.Windows.Forms.Button();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.lbl_file_upload = new System.Windows.Forms.Label();
             this.btn_browse = new System.Windows.Forms.Button();
@@ -514,6 +516,8 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.White;
+            this.tabPage1.Controls.Add(this.lbl_progress2);
+            this.tabPage1.Controls.Add(this.progressBar2);
             this.tabPage1.Controls.Add(this.metroTile9);
             this.tabPage1.Controls.Add(this.metroTile8);
             this.tabPage1.Controls.Add(this.metroTile7);
@@ -535,6 +539,22 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "MAIN";
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // lbl_progress2
+            // 
+            this.lbl_progress2.AutoSize = true;
+            this.lbl_progress2.Location = new System.Drawing.Point(463, 354);
+            this.lbl_progress2.Name = "lbl_progress2";
+            this.lbl_progress2.Size = new System.Drawing.Size(49, 12);
+            this.lbl_progress2.TabIndex = 100;
+            this.lbl_progress2.Text = "No data";
+            // 
+            // progressBar2
+            // 
+            this.progressBar2.Location = new System.Drawing.Point(463, 378);
+            this.progressBar2.Name = "progressBar2";
+            this.progressBar2.Size = new System.Drawing.Size(259, 23);
+            this.progressBar2.TabIndex = 99;
             // 
             // metroTile9
             // 
@@ -1278,7 +1298,7 @@
             this.tabWiFi.Controls.Add(this.txt_folder);
             this.tabWiFi.Controls.Add(this.txt_downloadfile);
             this.tabWiFi.Controls.Add(this.button5);
-            this.tabWiFi.Controls.Add(this.button6);
+            this.tabWiFi.Controls.Add(this.btn_upload);
             this.tabWiFi.Controls.Add(this.pictureBox4);
             this.tabWiFi.Controls.Add(this.lbl_file_upload);
             this.tabWiFi.Controls.Add(this.btn_browse);
@@ -1341,7 +1361,7 @@
             this.txt_folder.Name = "txt_folder";
             this.txt_folder.Size = new System.Drawing.Size(218, 21);
             this.txt_folder.TabIndex = 93;
-            this.txt_folder.Text = "motor";
+            this.txt_folder.Text = "portable";
             // 
             // txt_downloadfile
             // 
@@ -1361,15 +1381,15 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button6
+            // btn_upload
             // 
-            this.button6.Location = new System.Drawing.Point(195, 22);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(132, 23);
-            this.button6.TabIndex = 92;
-            this.button6.Text = "post to server";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.btn_upload.Location = new System.Drawing.Point(195, 22);
+            this.btn_upload.Name = "btn_upload";
+            this.btn_upload.Size = new System.Drawing.Size(132, 23);
+            this.btn_upload.TabIndex = 92;
+            this.btn_upload.Text = "post to server";
+            this.btn_upload.UseVisualStyleBackColor = true;
+            this.btn_upload.Click += new System.EventHandler(this.button6_Click);
             // 
             // pictureBox4
             // 
@@ -1908,15 +1928,17 @@
         private System.Windows.Forms.TextBox txt_folder;
         private System.Windows.Forms.TextBox txt_downloadfile;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button btn_upload;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.Label lbl_file_upload;
         private System.Windows.Forms.Button btn_browse;
         private MetroFramework.Controls.MetroTile metroTile3;
         private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label lbl_progress;
         private System.Windows.Forms.Label lbl_datacount;
-        public System.Windows.Forms.ProgressBar progressBar1;
-        public System.Windows.Forms.Label lbl_progress;
+        private System.Windows.Forms.Label lbl_progress2;
+        private System.Windows.Forms.ProgressBar progressBar2;
     }
 }
 

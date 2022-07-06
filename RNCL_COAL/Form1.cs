@@ -13,6 +13,9 @@ using UHF;
 using System.Threading;
 using System.IO;
 using System.Net;
+using NAudio;
+using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System.Diagnostics;
 
 
@@ -403,42 +406,99 @@ namespace RNCL_COAL
 
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+
+        bool capturing = false;
+        WaveIn _capture = null;
+        WaveFileWriter _writer = null;
+        int sample_rate = 96000;
+        string saveName_img;
+        string saveName_rcd;
+        string saveName_csv;
+        List<byte[]> audio_data;
+        List<byte[]> _tmp_list = new List<byte[]>();
+        string saveFolder = Application.StartupPath + @"\portabledata";
+        private void _capture_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            if (capturing && _tmp_list.Count < 30)
+            {
+                _writer.Write(e.Buffer, 0, e.BytesRecorded);
+                _tmp_list.Add(e.Buffer);
+
+            }
+            else if (_tmp_list.Count == 30)
+            {
+                capturing = false;
+                audio_data = _tmp_list;
+                _tmp_list = new List<byte[]>();
+                _capture.StopRecording();
+            }
+        }
+        private async void _capture_RecordingStopped(object sender, StoppedEventArgs e)
+        {
+            _writer?.Dispose();
+            _writer = null;
+            _capture.Dispose();
+            _capture = null;
+            await UploadAsync(saveName_rcd, "portable");
+        }
+        private void save_ultrasonic(string name)
+        {
+            capturing = true;
+            _tmp_list = new List<byte[]>();
+            // .wav file saving folder
+            //_outputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "NAudio");
+            //Directory.CreateDirectory(_outputFolder);
+
+            // device
+            MMDeviceCollection _devices = new MMDeviceEnumerator().EnumerateAudioEndPoints(
+                DataFlow.Capture, DeviceState.Active);
+
+            MMDevice device = new MMDeviceEnumerator().GetDevice(_devices[0].ID);
+
+            _capture = new WaveIn();
+            _capture.DeviceNumber = 0;
+            _capture.WaveFormat = new WaveFormat(sample_rate, 1);
+
+            _writer = new WaveFileWriter(name, _capture.WaveFormat);
+
+            _capture.DataAvailable += _capture_DataAvailable;
+            _capture.RecordingStopped += _capture_RecordingStopped; ;
+            _capture.StartRecording();
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
         {
 
             if (pictureBox1.Image == null) return;
-
+            if (capturing) return;
 
             label1.Text = Convert.ToString(max_i) + "," + Convert.ToString(max_j) + "," + Convert.ToString(min_i) + "," + Convert.ToString(min_j);
             liveStream = false;
             btnCalibrate.Enabled = true;
 
-            string saveFolder = @"D:\imagesave";
             if (!System.IO.Directory.Exists(saveFolder))
                 System.IO.Directory.CreateDirectory(saveFolder);
 
+            saveName_img = saveFolder + "\\" + FileUploadName(saveFolder, "image.bmp");
+            saveName_rcd = saveFolder + "\\" + FileUploadName(saveFolder, "recorded.wav");
+            saveName_csv = saveFolder + "\\" + FileUploadName(saveFolder, "temperature.csv");
+            //pictureBox1.Image.Save(saveFolder + "\\" + FileUploadName(saveFolder, "image.png"), System.Drawing.Imaging.ImageFormat.Png);
+            pictureBox1.Image.Save(saveName_img, System.Drawing.Imaging.ImageFormat.Bmp);
+            save_ultrasonic(saveName_rcd);
+            Save_TempData(saveName_csv);
+            await UploadAsync(saveName_img, "portable");
+            await UploadAsync(saveName_csv, "portable");
 
-            pictureBox1.Image.Save(saveFolder + "\\" + FileUploadName(saveFolder, "image.png"), System.Drawing.Imaging.ImageFormat.Png);
-            pictureBox1.Image.Save(saveFolder + "\\" + FileUploadName(saveFolder, "image.bmp"), System.Drawing.Imaging.ImageFormat.Bmp);
-
-            Save_TempData();
-
+            // restart streaming
             liveStream = true;
             StartStreaming streamData = new StartStreaming(StreamData);
             streamData.BeginInvoke(null, null);
 
         }
 
-        void Save_TempData()
+        void Save_TempData(string filename)
         {
-
-            string saveFolder = @"D:\imagesave";
-
-            if (!System.IO.Directory.Exists(saveFolder))
-                System.IO.Directory.CreateDirectory(saveFolder);
-
-            System.IO.StreamWriter file = new System.IO.StreamWriter(saveFolder + "\\" + FileUploadName(saveFolder, "temperature.csv"));
-
+            System.IO.StreamWriter file = new System.IO.StreamWriter(filename);
             file.WriteLine("Row,Column,temperature");
 
             for (int i = 0; i < 384; i++)
@@ -447,13 +507,9 @@ namespace RNCL_COAL
                 {
                     double temp = DLLHelper.CalcTemp(i, j, false, 0);
                     file.WriteLine("{0},{1},{2}", i, j, temp);
-
                 }
             }
-
             file.Close();
-
-
         }
 
         public string FileUploadName(String dirPath, String fileN)
@@ -461,10 +517,14 @@ namespace RNCL_COAL
             string fileName = fileN;
             if (fileN.Length > 0)
             {
+                string datetime = DateTime.Now.ToString("yyyyMMddHHmm");
                 int indexOfDot = fileName.LastIndexOf(".");
                 string strName = fileName.Substring(0, indexOfDot);
                 string strExt = fileName.Substring(indexOfDot);
                 bool bExist = true;
+                string rfidnum = "";
+                if (txtCurTag.Text.Length > 0)
+                    rfidnum = txtCurTag.Text;
                 int fileCount = 0;
                 string dirMapPath = string.Empty;
                 while (bExist)
@@ -474,7 +534,7 @@ namespace RNCL_COAL
                     if (System.IO.File.Exists(pathCombine))
                     {
                         fileCount++;
-                        fileName = strName + "(" + fileCount + ")" + strExt;
+                        fileName = datetime + "_" + strName + "_" + rfidnum + "_" + fileCount + strExt;
 
                     }
                     else
@@ -1519,10 +1579,7 @@ namespace RNCL_COAL
 
         }
 
-
-
-
-
+        
 
 
         private string GetErrorCodeDesc(int cmdRet)
@@ -1567,8 +1624,6 @@ namespace RNCL_COAL
         #endregion
 
         #region WIFI
-
-        WiFiServer server = new WiFiServer();
         private void btn_browse_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog() { Filter = "All files|*.*" })
@@ -1577,13 +1632,20 @@ namespace RNCL_COAL
                     lbl_file_upload.Text = ofd.FileName;
             }
         }
+        private void log(string msg)
+        {
+            this.Invoke(new Action(delegate ()
+            {
+                listBox1.Items.Add(string.Format("[{0}]{1}", DateTime.Now.ToString(), msg));
 
+            }));
+        }
         private void button6_Click(object sender, EventArgs e)
         {
             string fileName = lbl_file_upload.Text;
             //fileName = fileName.Split('\\').Last();
             string folderName = txt_folder.Text;
-            //server.startUpload(fileName, folderName);
+            startUpload(fileName, folderName);
 
         }
 
@@ -1596,28 +1658,137 @@ namespace RNCL_COAL
             }
         }
 
-        private void btn_motor_Click(object sender, EventArgs e)
+        private async void btn_motor_Click(object sender, EventArgs e)
         {
-            string uri = "http://192.168.0.150/download";
-            using (WebClient webClient = new WebClient()) 
+            await DownloadAsync();
+            //string uri = "http://192.168.0.150/download";
+            //using (WebClient webClient = new WebClient())
+            //{
+            //    string foldername = txt_folder.Text;
+            //    string filePath = Application.StartupPath + @"\\" + foldername + "\\filename.txt";
+            //    //startDownload("filename.txt", foldername);
+            //    webClient.DownloadFile(uri + "?download=" + foldername + "/filename.txt", filePath);
+            //    string[] filenames = File.ReadAllLines(filePath);
+            //    if (filenames.Length > 0)
+            //    {
+            //        for (int i = 0; i < filenames.Length; i++)
+            //        {
+            //            lbl_datacount.Text = "[" + (i + 1).ToString() + "/" + filenames.Length.ToString() + "]";
+            //            //webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+            //            //webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+            //            //webClient.DownloadFileAsync(new Uri(uri + "?download=" + foldername + "/" + filenames[i]), Application.StartupPath + @"\" + foldername + @"\" + filenames[i]);
+
+            //            startDownload(filenames[i], foldername);
+            //            //webClient.DownloadFile(uri + "?download=" + foldername + "/" + filenames[i], Application.StartupPath + @"\\" + foldername + "\\" + filenames[i]);
+            //        }
+            //    }
+            //}
+        }
+        public static int downloadnum = 0;
+        private static void downcallback(object sender, AsyncCompletedEventArgs e)
+        {
+            downloadnum--;
+        }
+
+        private void startDownload(string filename, string foldername)
+        {
+            Thread thread = new Thread(() => {
+                WebClient client = new WebClient();
+                string uri = "http://192.168.0.150/download";
+                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                client.DownloadFileAsync(new Uri(uri + "?download=" + foldername + "/" + filename), Application.StartupPath + @"\" + foldername + @"\" + filename);
+            });
+            thread.Start();
+        }
+        private async Task UploadAsync(string filename, string foldername)
+        {
+            using (var client = new WebClient())
             {
-                string foldername = txt_folder.Text;
+                client.UploadFileCompleted += (s, e) => lbl_progress2.Text = "Upload file completed.";
+                client.UploadProgressChanged += (s, e) => progressBar2.Value = e.ProgressPercentage;
+                client.UploadProgressChanged +=(s,e)=>lbl_progress2.Text= "Uploaded " +filename +" : "+ e.BytesSent + " of " + e.TotalBytesToSend;
+                string uri = "http://192.168.0.150/fupload";
+                client.DownloadData("http://192.168.0.150/u" + foldername);
+                client.Headers.Add("filename", System.IO.Path.GetFileName(filename));
+                await client.UploadFileTaskAsync(new Uri(uri), filename);
+            }
+        }
+        private async Task DownloadAsync()
+        {
+            using (var client = new WebClient())
+            {
+                client.DownloadFileCompleted += (s, e) => lbl_progress.Text = "Download file completed.";
+                client.DownloadProgressChanged += (s, e) => progressBar1.Value = e.ProgressPercentage;
+                client.DownloadProgressChanged += (s, e) => lbl_progress.Text = "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
+                client.DownloadProgressChanged += (s, e) =>
+                {
+                    lbl_datacount.Text = "%" + e.ProgressPercentage.ToString();
+                    lbl_datacount.Left = Math.Min(
+                        (int)(progressBar1.Left + e.ProgressPercentage / 100f * progressBar1.Width),
+                        progressBar1.Width - lbl_datacount.Width
+                    );
+                }; string foldername = txt_folder.Text;
                 string filePath = Application.StartupPath + @"\\" + foldername + "\\filename.txt";
-                //startDownload("filename.txt", foldername);
-                webClient.DownloadFile(uri + "?download=" + foldername + "/filename.txt", filePath);
+                string uri = "http://192.168.0.150/download";
+                client.DownloadFile(uri + "?download=" + foldername + "/filename.txt", filePath);
                 string[] filenames = File.ReadAllLines(filePath);
                 if (filenames.Length > 0)
                 {
                     for (int i = 0; i < filenames.Length; i++)
                     {
-                        lbl_datacount.Text = "[" + (i + 1).ToString() + "/" + filenames.Length.ToString() + "]";
-                        //server.startDownload(filenames[i], foldername);
-                        //webClient.DownloadFile(uri + "?download=" + foldername + "/" + filenames[i], Application.StartupPath + @"\\" + foldername + "\\" + filenames[i]);
+                        await client.DownloadFileTaskAsync(new Uri(uri + "?download=" + foldername + "/" + filenames[i]), Application.StartupPath + @"\" + foldername + @"\" + filenames[i]);
                     }
                 }
             }
+
+        }
+        private void startUpload(string filename, string foldername)
+        {
+            Thread thread = new Thread(() => {
+                WebClient client = new WebClient();
+                string uri = "http://192.168.0.150/fupload";
+                client.DownloadData("http://192.168.0.150/u"+foldername);
+                client.UploadProgressChanged += new UploadProgressChangedEventHandler(client_UploadProgressChanged);
+                client.UploadFileCompleted += new UploadFileCompletedEventHandler(client_UploadFileCompleted);
+                client.Headers.Add("filename", System.IO.Path.GetFileName(filename));
+                client.UploadFileAsync(new Uri(uri), filename);
+            });
+            thread.Start();
         }
 
+        void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)delegate {
+                double bytesIn = double.Parse(e.BytesReceived.ToString());
+                double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+                double percentage = bytesIn / totalBytes * 100;
+                lbl_progress.Text = "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
+                progressBar1.Value = int.Parse(Math.Truncate(percentage).ToString());
+            });
+        }
+        void client_UploadProgressChanged(object sender, UploadProgressChangedEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)delegate {
+                double bytesIn = double.Parse(e.BytesSent.ToString());
+                double totalBytes = double.Parse(e.TotalBytesToSend.ToString());
+                double percentage = bytesIn / totalBytes * 100;
+                lbl_progress.Text = "Downloaded " + e.BytesSent + " of " + e.TotalBytesToSend;
+                progressBar1.Value = int.Parse(Math.Truncate(percentage).ToString());
+            });
+        }
+        void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)delegate {
+                lbl_progress.Text = "Completed";
+            });
+        }
+        void client_UploadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)delegate {
+                lbl_progress.Text = "Completed";
+            });
+        }
 
 
         #endregion WIFI
