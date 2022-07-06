@@ -1454,9 +1454,7 @@ namespace RNCL_COAL
                     }
                 }
             }
-            int a = 0;
 
-            int tmp = delta[0];
             int num = 0;
             for (int i = 0; i < dataGridView1.RowCount; i++)
             {
