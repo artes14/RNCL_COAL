@@ -18,33 +18,49 @@ using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using System.Diagnostics;
 
+using System.IO.Ports;
+using Apulsetech.Event;
+using Apulsetech.Rfid;
+using Apulsetech.Rfid.Type;
+using Apulsetech.Util;
 
 
 
 namespace RNCL_COAL
 {
-    public partial class Form1 : MetroFramework.Forms.MetroForm
+    public partial class Form1 : MetroFramework.Forms.MetroForm, ReaderEventListener
     {
-        Bitmap bmp = new Bitmap(384, 288);
 
-        int max_i, max_j, min_i, min_j;
-
-        ushort[,] palleteArr = new ushort[1001, 3];
-        Bitmap paletteImg = new Bitmap("Iron.png");
-        bool liveStream = true;
 
        
 
         public Form1()
         {
             InitializeComponent();
-
-
-
+            Initialize();
 
 
         }
-        
+        private void Initialize()
+        {
+            RFID_Initialize();
+
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            comboColor.SelectedIndex = 2;
+
+        }
+
+
+
+        #region Thermal
+
+        Bitmap bmp = new Bitmap(384, 288);
+        int max_i, max_j, min_i, min_j;
+        ushort[,] palleteArr = new ushort[1001, 3];
+        Bitmap paletteImg = new Bitmap("Iron.png");
+        bool liveStream = true;
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
@@ -74,7 +90,6 @@ namespace RNCL_COAL
                 textBox1.Text = "Err:" + bRes.ToString();
             }
 
-            //tempTimer.Enabled = true;
         }
 
         private void btnStream_Click(object sender, EventArgs e)
@@ -90,10 +105,6 @@ namespace RNCL_COAL
 
             if (lblHigh.Visible == false) lblHigh.Visible = true;
             if (lblLow.Visible == false) lblLow.Visible = true;
-
-
-
-            //tempTimer.Enabled = true;
 
 
 
@@ -264,34 +275,27 @@ namespace RNCL_COAL
 
         public void GetTemp()
         {
-            while (liveStream)
+            while (true)
             {
-                for (int i = 0; i < 384; i++)
+                if (liveStream)
                 {
-                    for (int j = 0; j < 288; j++)
+                    for (int i = 0; i < 384; i++)
                     {
-                        temp[i, j] = DLLHelper.CalcTemp(i, j, false, 0);
+                        for (int j = 0; j < 288; j++)
+                        {
+                            temp[i, j] = DLLHelper.CalcTemp(i, j, false, 0);
+
+                        }
 
                     }
-                  
+                    Thread.Sleep(50);
                 }
-                Thread.Sleep(50);
+                
+
             }
            
         }
 
-        void GetTempData()
-        {
-
-            for(int i = 0; i < 384; i++)
-            {
-                for(int j = 0; j < 288; j++)
-                {
-                    temp[i,j] = DLLHelper.CalcTemp(i, j, false, 0);
-                }
-            }
-
-        }
 
         void RefreshImage(Bitmap bmpData)
         {
@@ -308,6 +312,10 @@ namespace RNCL_COAL
                 MaxMin_Temp(out high, out low);
                 lblHigh.Text = Convert.ToString(Math.Round(high, 3) + "℃");
                 lblLow.Text = Convert.ToString(Math.Round(low, 3) + "℃");
+
+                tempBox.Text = lblHigh.Text;
+
+
                 //======== visual============
                 lblHighTmp.Left = pictureBox1.Left + max_i;
                 lblHighTmp.Top = pictureBox1.Top + max_j;
@@ -374,37 +382,27 @@ namespace RNCL_COAL
             }
         }
 
-        private void tempTimer_Tick(object sender, EventArgs e)
-        {
-            GetTempData();
-            //Point mousePos = new Point();
-            //double temp=DLLHelper.CalcTemp(Cursor.Position.X, Cursor.Position.Y,false,0);
-            //tempBox.Text = Convert.ToString(temp);
-        }
+
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (pictureBox1.Image == null) return;
+            //if (pictureBox1.Image == null) return;
 
-            label4.Text = Convert.ToString(e.X + " , " + pictureBox1.Width);
+            //label4.Text = Convert.ToString(e.X + " , " + pictureBox1.Width);
            
             
-                double temp = DLLHelper.CalcTemp(e.X, e.Y, false, 0);
-                tempBox.Text = Convert.ToString(Math.Round(temp, 1) + "℃");
+            //    double temp = DLLHelper.CalcTemp(e.X, e.Y, false, 0);
+            //    tempBox.Text = Convert.ToString(Math.Round(temp, 1) + "℃");
             
      
         }
 
         private void pictureBox1_MouseLeave(object sender, EventArgs e)
         {
-            tempBox.Text = "None";
+            //tempBox.Text = "None";
         }
 
 
-        private void pictureBox1_MouseHover(object sender, EventArgs e)
-        {
-
-        }
 
 
         bool capturing = false;
@@ -416,7 +414,7 @@ namespace RNCL_COAL
         string saveName_csv;
         List<byte[]> audio_data;
         List<byte[]> _tmp_list = new List<byte[]>();
-        string saveFolder = Application.StartupPath + @"\portabledata";
+        string saveFolder = Application.StartupPath + @"\portable";
         private void _capture_DataAvailable(object sender, WaveInEventArgs e)
         {
             if (capturing && _tmp_list.Count < 30)
@@ -439,9 +437,9 @@ namespace RNCL_COAL
             _writer = null;
             _capture.Dispose();
             _capture = null;
-            await UploadAsync(saveName_rcd, "portable");
+            //await UploadAsync(saveName_rcd, "portable");
         }
-        private void save_ultrasonic(string name)
+        private async Task save_ultrasonic(string name)
         {
             capturing = true;
             _tmp_list = new List<byte[]>();
@@ -464,6 +462,7 @@ namespace RNCL_COAL
             _capture.DataAvailable += _capture_DataAvailable;
             _capture.RecordingStopped += _capture_RecordingStopped; ;
             _capture.StartRecording();
+            
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
@@ -478,26 +477,63 @@ namespace RNCL_COAL
 
             if (!System.IO.Directory.Exists(saveFolder))
                 System.IO.Directory.CreateDirectory(saveFolder);
+            string zipname = FileUploadFolder(saveFolder);
+            System.IO.Directory.CreateDirectory(zipname);
 
-            saveName_img = saveFolder + "\\" + FileUploadName(saveFolder, "image.bmp");
-            saveName_rcd = saveFolder + "\\" + FileUploadName(saveFolder, "recorded.wav");
-            saveName_csv = saveFolder + "\\" + FileUploadName(saveFolder, "temperature.csv");
+            saveName_img = zipname + "\\" + "image.bmp";
+            saveName_rcd = zipname + "\\" + "recorded.wav";
+            saveName_csv = zipname + "\\" + "temperature.csv";
             //pictureBox1.Image.Save(saveFolder + "\\" + FileUploadName(saveFolder, "image.png"), System.Drawing.Imaging.ImageFormat.Png);
             pictureBox1.Image.Save(saveName_img, System.Drawing.Imaging.ImageFormat.Bmp);
-            save_ultrasonic(saveName_rcd);
+            await save_ultrasonic(saveName_rcd);
             Save_TempData(saveName_csv);
-            await UploadAsync(saveName_img, "portable");
-            await UploadAsync(saveName_csv, "portable");
+
+            liveStream = true;
+            Task task = new Task(delegate {
+                while (capturing) ;
+                if (Compress(zipname + ".7z", zipname))
+                {
+                    Invoke(new MethodInvoker(() =>
+                    {
+                        lbl_progress2.Text = "zip success... preparing to upload";
+                    }));
+                    UploadAsync(saveName_csv, "portable");
+                    
+                }
+                else
+                {
+                    lbl_progress2.Text = "zip failed";
+                }
+            });
+            task.Start();
+                //if(System.IO.Directory.Exists(saveName_img) && System.IO.Directory.Exists(saveName_rcd) && System.IO.Directory.Exists(saveName_csv))
+
 
             // restart streaming
-            liveStream = true;
+
             StartStreaming streamData = new StartStreaming(StreamData);
             streamData.BeginInvoke(null, null);
 
         }
+        
 
         void Save_TempData(string filename)
         {
+            //========REGACY============
+            //System.IO.StreamWriter file = new System.IO.StreamWriter(filename);
+            //file.WriteLine("Row,Column,temperature");
+
+            //for (int i = 0; i < 384; i++)
+            //{
+            //    for (int j = 0; j < 288; j++)
+            //    {
+            //        double temp = DLLHelper.CalcTemp(i, j, false, 0);
+            //        file.WriteLine("{0},{1},{2}", i, j, temp);
+            //    }
+            //}
+            //file.Close();
+            //==============================
+
             System.IO.StreamWriter file = new System.IO.StreamWriter(filename);
             file.WriteLine("Row,Column,temperature");
 
@@ -505,9 +541,13 @@ namespace RNCL_COAL
             {
                 for (int j = 0; j < 288; j++)
                 {
-                    double temp = DLLHelper.CalcTemp(i, j, false, 0);
-                    file.WriteLine("{0},{1},{2}", i, j, temp);
+                    int temp = Convert.ToInt16(DLLHelper.CalcTemp(i, j, false, 0)*10); //0.1도 단위
+
+                    file.Write(temp);
+                    file.Write(",");
                 }
+
+                 file.WriteLine();
             }
             file.Close();
         }
@@ -546,6 +586,60 @@ namespace RNCL_COAL
             }
 
             return fileName;
+        }
+        public string FileUploadFolder(String dirPath)
+        {
+            string datetime = DateTime.Now.ToString("yyyyMMddHHmm");
+            bool bExist = true;
+            string rfidnum = "";
+            if (txtCurTag.Text.Length > 0)
+                rfidnum = txtCurTag.Text;
+            int fileCount = 0;
+            string folderName = datetime + "_" + rfidnum + "_" + fileCount;
+            string pathCombine = "";
+            while (bExist)
+            {
+                pathCombine = System.IO.Path.Combine(dirPath, folderName);
+                if (System.IO.File.Exists(pathCombine))
+                {
+                    fileCount++;
+                    folderName = datetime + "_" + rfidnum + "_" + fileCount;
+                }
+                else
+                {
+                    bExist = false;
+                }
+            }
+
+
+            return pathCombine;
+        }
+        private bool Compress(string output, string input)
+        {
+            try
+            {
+                ProcessStartInfo info = new ProcessStartInfo();
+                info.FileName = "7za.exe";
+                info.Arguments = "a -t7z \"" + output + "\" \"" + input;
+
+                info.WindowStyle = ProcessWindowStyle.Hidden;
+                Process P = Process.Start(info);
+                P.WaitForExit();
+
+                int result = P.ExitCode;
+                if (result != 0)
+                {
+                    //txt_out.Text = "error!! code = " + result;
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
         }
 
         #region TestCode
@@ -662,7 +756,6 @@ namespace RNCL_COAL
 
 
         }
-        #endregion TestCode
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -721,6 +814,10 @@ namespace RNCL_COAL
             //  bitmap
         }
 
+        #endregion TestCode
+
+
+
         private void btnGetPotint_Click(object sender, EventArgs e)
         {
             if(lblHighTmp.Visible != true)
@@ -739,10 +836,6 @@ namespace RNCL_COAL
         }
   
 
-        private void btn_ConnectRF_Click(object sender, EventArgs e)
-        {
-            int portNum = Convert.ToInt32(txtPort.Text);
-        }
 
 
      
@@ -774,19 +867,7 @@ namespace RNCL_COAL
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            comboColor.SelectedIndex = 0;
 
-            com_Q.SelectedIndex = 4;
-            com_Target.SelectedIndex = 0;
-            com_S.SelectedIndex = 0;
-            for (int i = 0x03; i <= 0xff; i++)
-            {
-                com_scantime.Items.Add(Convert.ToString(i) + "*100ms");
-            }
-               com_scantime.SelectedIndex = 7;
-        }
 
         void MaxMin_Temp(out double max, out double min)//,out int max_i, out int max_j, out int min_i, out int min_j)
         {
@@ -821,620 +902,468 @@ namespace RNCL_COAL
 
         }
 
+        #endregion
 
         #region RFID
 
-       
-        //byte fComAdr = 0xff; // 현재 동작하는 ComAdr
-        //int fCmdRet = 30; //모든 실행 명령의 반환값
-        //private int frmcomportindex;
 
-        private byte fComAdr = 0xff; //현재 동작하는 ComAdr
-        private int ferrorcode;
-        private byte fBaud;
-        private double fdminfre;
-        private double fdmaxfre;
-        private int fCmdRet = 30; //모든 실행 명령의 반환값
-        private bool fIsInventoryScan;
-        private bool fisinventoryscan_6B;
-        private byte[] fOperEPC = new byte[100];
-        private byte[] fPassWord = new byte[4];
-        private byte[] fOperID_6B = new byte[10];
-       // ArrayList list = new ArrayList();
-        private int CardNum1 = 0;
-        private string fInventory_EPC_List; //存贮询查列表（如果读取的数据没有变化，则不进行刷新）
-        private int frmcomportindex;
-        private bool SeriaATflag = false;
-        private byte Target = 0;
-        private byte InAnt = 0;
-        private byte Scantime = 0;
-        private byte FastFlag = 0;
-        private byte Qvalue = 0;
-        private byte Session = 0;
-        private int total_turns = 0;//轮数
-        private int total_tagnum = 0;//标签数量
-        private int total_time = 0;//总时间 
-        private int targettimes = 0;
-        private int CommunicationTime = 0;
-        private byte TIDFlag = 0;
-        public static byte antinfo = 0;
-        private int AA_times = 0;
+        //NEW RFID
 
-        private delegate void WriteLogUnSafe(RichTextBox logRichTxt, string strLog, int nType);
-        private void WriteLog(RichTextBox logRichTxt, string strLog, int nType)
+        private Reader mReader;
+        private bool mConnected = false;
+        private bool mRfidInventoryStarted = false;
+
+
+        private void RFID_Initialize()
         {
-            if (this.InvokeRequired)
+            
+            int[] AntennaPortsArray = { 1, 2, 3, 4, 5, 6, 7, 8 };
+            for (int i = 0; i < AntennaPortsArray.Length; i++)
             {
-                WriteLogUnSafe InvokeWriteLog = new WriteLogUnSafe(WriteLog);
-                this.Invoke(InvokeWriteLog, new object[] { logRichTxt, strLog, nType });
+                AntennaPortsComboBox.Items.Add(AntennaPortsArray[i]);
+            }
+            AntennaPortsComboBox.SelectedIndex = 0;
+
+            string[] comPorts = SerialPort.GetPortNames();
+            if (comPorts.Length > 0)
+            {
+                SerialPortComboBox.Items.AddRange(comPorts);
+                SerialPortComboBox.SelectedIndex = 0;
+                ConnectButton.Enabled = true;
             }
             else
             {
-                if (nType == 0)
+                ConnectButton.Enabled = false;
+            }
+
+            string[] baudrates = ConfigUtil.RfidSerialPortSupportedBaudrateStringList;
+            SerialBaudrateComboBox.Items.AddRange(baudrates);
+            SerialBaudrateComboBox.SelectedIndex = 0;
+
+            TagListView.Columns.Add("Tag", TagListView.Width - 100);
+            TagListView.Columns.Add("RSSI", 100);
+
+
+
+            for (int i = RFID.Power.MIN_POWER; i <= RFID.Power.MAX_POWER; i++)
+            {
+                comboBoxRfidInventoryOperationSettingsPowerGain.Items.Add(i / 1.0);
+            }
+            comboBoxRfidInventoryOperationSettingsPowerGain.SelectedIndex = 25;
+        }
+
+        private void LoadRfidInformation()
+        {
+            if (mReader != null)
+            {
+                string moduleName = mReader.GetModuleName();
+                string versionCode = mReader.GetRFIDVersion();
+                int version = Convert.ToInt32(versionCode);
+                string versionString = string.Format("v{0:D2}{1:D2}{2:D2}",
+                                                     (version >> 24) & 0xff,
+                                                     (version >> 16) & 0xff,
+                                                     (version >> 8) & 0xff);
+
+                string[] RfidRegulatoryRegionsArray = { "FCC", "ETSI", "Japan", "China" };
+                string region = RfidRegulatoryRegionsArray[mReader.GetRegulatoryRegion()];
+                string[] RfidRegionsArray = {
+                    "Korea", "EU", "FCC", "China", "Bangladesh", "Brazil", "Brunei",
+                    "Australia", "Japan(1W)", "Japan(250mW)", "Hongkong", "India",
+                    "Indonesia", "Iran", "Israel", "Jordan", "Malaysia", "Morocco",
+                    "New Zealand", "Pakistan", "Peru", "Philippines", "Singapore",
+                    "South Africa", "Taiwan", "Thailand", "Uruguay", "Venezuela",
+                    "Vietnam", "Russia", "Algeria"
+                };
+                string globalBand = RfidRegionsArray[mReader.GetRegion()];
+
+                ModuleValueLabel.Text = moduleName.Substring(0, 4) + "(" + region + ", " + globalBand + ") " + versionString;
+            }
+        }
+
+        
+        private void TryConnect()
+        {
+
+            ConnectButton.Text = "CONNECTING...";
+
+
+            //=============================
+
+            mReader = Reader.GetReader((string)SerialPortComboBox.SelectedItem,
+                      Convert.ToInt32(SerialBaudrateComboBox.SelectedItem),
+                      Convert.ToInt32(AntennaPortsComboBox.SelectedItem));
+
+
+            string name = mReader.GetModuleName();
+
+            if (mReader != null)
+            {
+                ConnectButton.Text = "DISCONNECT";
+                mConnected = true;
+
+                mReader.SetEventListener(this);
+
+                if (mReader.Start())
                 {
-                    logRichTxt.AppendText(strLog+'\n');
+                    name = mReader.GetModuleName();
+
+                    TagInventoryButton.Enabled = true;
+
+                    LoadRfidInformation();
+
+                }
+
+            }
+
+            else
+            {
+                ConnectButton.Text = "CONNECT";
+                MessageBox.Show("Failed to get the instance of scanner and reader device!");
+            }
+            
+
+            //==============================
+
+
+        }
+
+        private void Disconnect()
+        {
+            if (mConnected)
+            {
+                if (mReader != null)
+                {
+                    mReader.RemoveEventListener(this);
+                    if (mReader.Stop())
+                    {
+                        mReader.Destroy();
+                        mReader = null;
+                        TagInventoryButton.Enabled = false;
+                    }
+                }
+
+                ConnectButton.Text = "CONNECT";
+                mConnected = false;
+            }
+        }
+
+        public void OnReaderDeviceStateChanged(DeviceEvent state)
+        {
+            switch (state)
+            {
+                case DeviceEvent.DISCONNECTED:
+                    Invoke(new Action(delegate ()
+                    {
+                        TagInventoryButton.Enabled = false;
+                        ConnectButton.Enabled = true;
+                        ConnectButton.Text = "CONNCET";
+                        mConnected = false;
+                    }));
+                    break;
+            }
+        }
+        public void OnReaderRemoteKeyEvent(int action, int keyCode)
+        {
+            // NOTE: Handle an inventory key event if needed.
+        }
+
+        private void ProcessRfidTagData(string data)
+        {
+            string epc = "";
+            string rssi = "";
+            string phase = "";
+            string phaseDegree = "";
+            string fastID = "";
+            string channel = "";
+            string port = "";
+
+            string[] dataItems = data.Split(';');
+            foreach (string dataItem in dataItems)
+            {
+                if (dataItem.Contains("rssi"))
+                {
+                    int point = dataItem.IndexOf(':') + 1;
+                    rssi = dataItem.Substring(point, dataItem.Length - point);
+                }
+                else if (dataItem.Contains("phase"))
+                {
+                    int point = dataItem.IndexOf(':') + 1;
+                    phase = dataItem.Substring(point, dataItem.Length - point);
+                    phaseDegree = phase + "˚";
+                }
+                else if (dataItem.Contains("fastID"))
+                {
+                    int point = dataItem.IndexOf(':') + 1;
+                    fastID = dataItem.Substring(point, dataItem.Length - point);
+                }
+                else if (dataItem.Contains("channel"))
+                {
+                    int point = dataItem.IndexOf(':') + 1;
+                    channel = dataItem.Substring(point, dataItem.Length - point);
+                }
+                else if (dataItem.Contains("antenna"))
+                {
+                    int point = dataItem.IndexOf(':') + 1;
+                    port = dataItem.Substring(point, dataItem.Length - point);
                 }
                 else
                 {
-                    logRichTxt.AppendText(strLog+ '\n');
+                    epc = dataItem;
                 }
-
-                logRichTxt.Select(logRichTxt.TextLength, 0);
-                logRichTxt.ScrollToCaret();
             }
-        }
+
+            string[] items = new string[2];
+            items[0] = epc;
+            items[1] = rssi;
+            ListViewItem item = new ListViewItem(items);
 
 
-        private void btGetInformation_Click(object sender, EventArgs e)
-        {
-            byte TrType = 0;
-            byte[] VersionInfo = new byte[2];
-            byte ReaderType = 0;
-            byte ScanTime = 0;
-            byte dmaxfre = 0;
-            byte dminfre = 0;
-            byte powerdBm = 0;
-            byte FreBand = 0;
-            byte Ant = 0;
-            byte BeepEn = 0;
-            byte OutputRep = 0;
-            byte CheckAnt = 0;
-            text_RDVersion.Text = "";
-            int ctime = System.Environment.TickCount;
-            fCmdRet = RWDev.GetReaderInformation(ref fComAdr, VersionInfo, ref ReaderType, ref TrType, ref dmaxfre, ref dminfre, ref powerdBm, ref ScanTime, ref Ant, ref BeepEn, ref OutputRep, ref CheckAnt, frmcomportindex);
-            if (fCmdRet != 0)
+
+            if (dataGrideView_RFID.InvokeRequired)
             {
-                string strLog = "Get Reader Information failed: " + GetReturnCodeDesc(fCmdRet);
-                WriteLog(lrtxtLog, strLog, 1);
+                dataGrideView_RFID.Invoke(new MethodInvoker(delegate { Update_GridView_RFID(items); }));
             }
             else
             {
-                CommunicationTime = System.Environment.TickCount - ctime;
-                text_RDVersion.Text = Convert.ToString(VersionInfo[0], 10).PadLeft(2, '0') + "." + Convert.ToString(VersionInfo[1], 10).PadLeft(2, '0');
+                Update_GridView_RFID(items);
+            }
+            //https://manniz.tistory.com/entry/CC-Sharp-%ED%81%AC%EB%A1%9C%EC%8A%A4-%EC%8A%A4%EB%A0%88%EB%93%9C-%EC%9E%91%EC%97%85%EC%9D%B4-%EC%9E%98%EB%AA%BB%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4-%EB%B0%94%EB%A1%9C-%ED%95%B4%EA%B2%B0%ED%95%98%EA%B8%B0
 
-                ComboBox_PowerDbm.SelectedIndex = Convert.ToInt32(powerdBm);
-                text_address.Text = Convert.ToString(fComAdr, 16).PadLeft(2, '0');
-                FreBand = Convert.ToByte(((dmaxfre & 0xc0) >> 4) | (dminfre >> 6));
-                switch (FreBand)
+
+            Invoke(new Action(delegate ()
+            {
+
+                TagListView.BeginUpdate();
+                TagListView.Items.Add(item);
+                TagListView.EndUpdate();
+
+                if ((TagListView.Items.Count - 1) > 0)
                 {
-                    case 1:
-                        {
-                            radioButton_band1.Checked = true;
-                            fdminfre = 920.125 + (dminfre & 0x3F) * 0.25;
-                            fdmaxfre = 920.125 + (dmaxfre & 0x3F) * 0.25;
-                        }
-                        break;
-                    case 2:
-                        {
-                            radioButton_band2.Checked = true;
-                            fdminfre = 902.75 + (dminfre & 0x3F) * 0.5;
-                            fdmaxfre = 902.75 + (dmaxfre & 0x3F) * 0.5;
-                        }
-                        break;
-                    case 3:
-                        {
-                            radioButton_band3.Checked = true;
-                            fdminfre = 917.1 + (dminfre & 0x3F) * 0.2;
-                            fdmaxfre = 917.1 + (dmaxfre & 0x3F) * 0.2;
-                        }
-                        break;
-                    case 4:
-                        {
-                            radioButton_band4.Checked = true;
-                            fdminfre = 865.1 + (dminfre & 0x3F) * 0.2;
-                            fdmaxfre = 865.1 + (dmaxfre & 0x3F) * 0.2;
-                        }
-                        break;
+                    TagListView.Items[TagListView.Items.Count - 1].EnsureVisible();
                 }
-                if (fdmaxfre != fdminfre)
-                    CheckBox_SameFre.Checked = false;
-              //  ComboBox_dminfre.SelectedIndex = dminfre & 0x3F;
-             //   ComboBox_dmaxfre.SelectedIndex = dmaxfre & 0x3F; // hmm...
 
-                string strLog = "Get Reader Information success ";
-                WriteLog(lrtxtLog, strLog, 0);
+            }));
+        }
+
+        public void OnReaderEvent(int eventId, int result, string data)
+        {
+            switch (eventId)
+            {
+                case Reader.READER_CALLBACK_EVENT_INVENTORY:
+                    if (result == RfidResult.SUCCESS)
+                    {
+                        if (data != null)
+                        {
+                            //mSoundUtil.PlayBeepSound();
+                            ProcessRfidTagData(data);
+                        }
+                    }
+                    break;
+
+                case Reader.READER_CALLBACK_EVENT_START_INVENTORY:
+                    if (!mRfidInventoryStarted)
+                    {
+                        mRfidInventoryStarted = true;
+                        Invoke(new Action(delegate ()
+                        {
+                            TagInventoryButton.Text = "STOP INVENTORY";
+                        }));
+                    }
+                    break;
+
+                case Reader.READER_CALLBACK_EVENT_STOP_INVENTORY:
+                    if (mRfidInventoryStarted)
+                    {
+                        mRfidInventoryStarted = false;
+                        Invoke(new Action(delegate ()
+                        {
+                            TagInventoryButton.Text = "START INVENTORY";
+                            ConnectButton.Enabled = true;
+                        }));
+                    }
+                    break;
             }
         }
 
-        private void btConnect232_Click(object sender, EventArgs e)
+        public virtual void OnReaderRemoteSettingChanged(int type, object value)
         {
-            if (txtPort.Text == "") return;
 
-            int portNum = Convert.ToInt32(txtPort.Text);
-            int FrmPortIndex = 0;
-            string strException = string.Empty;
+        }
 
-            fComAdr = 255;
-            fCmdRet = RWDev.OpenComPort(portNum, ref fComAdr, 0, ref FrmPortIndex);
-
-            string strLo2g = "click";
-            WriteLog(lrtxtLog, strLo2g, 1);
-
-            if (fCmdRet != 0)
+        private void ConnectButton_Click(object sender, EventArgs e)
+        {
+            if (mConnected)
             {
-                string strLog = "Connect failed: " + GetReturnCodeDesc(fCmdRet);
-                WriteLog(lrtxtLog, strLog, 1);
+                Disconnect();
+            }
+            else
+            {
+                TryConnect();
+            }
+
+        }
+
+        private void TagInventoryButton_Click(object sender, EventArgs e)
+        {
+
+            if (mReader != null)
+            {
+                if (mRfidInventoryStarted)
+                {
+                    if (mReader.StopOperation() == RfidResult.SUCCESS)
+                    {
+                        mRfidInventoryStarted = false;
+                        TagInventoryButton.Text = "START INVENTORY";
+
+                        ConnectButton.Enabled = true;
+
+                        dataGrideView_RFID.Rows.Clear();
+
+                        //Timer_Intensity.Enabled = !Timer_Intensity.Enabled; // done by JH
+
+
+
+                    }
+                }
+                else
+                {
+                    if (mReader.StartInventory() == RfidResult.SUCCESS)
+                    {
+
+                        mRfidInventoryStarted = true;
+                        TagInventoryButton.Text = "STOP INVENTORY";
+
+                        ConnectButton.Enabled = false;
+
+
+                        Thread threadRFID_Intensity = new Thread(() => Get_RFID_Intensity());
+                        threadRFID_Intensity.Start();
+
+                        //Timer_Intensity.Enabled = !Timer_Intensity.Enabled; // done by JH
+                    }
+                }
+            }
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Disconnect();
+
+            //if (mSoundUtil != null)
+            //{
+            //    mSoundUtil.Dispose();
+            //}
+        }
+
+        private void comboBoxRfidInventoryOperationSettingsPowerGain_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!comboBoxRfidInventoryOperationSettingsPowerGain.Focused)
+            {
                 return;
             }
-            else
-            {
-                frmcomportindex = FrmPortIndex;
-                string strLog = "Connected " + ComboBox_COM.Text;
-                WriteLog(lrtxtLog, strLog, 0);
-            }
 
-            //계면 요소의 유효성 처리 여부
-            EnabledForm();
-            btConnect232.Enabled = false;
-            btDisConnect232.Enabled = true;
-            //설정 단추 글꼴 색상
-            btConnect232.ForeColor = Color.Black;
-            btDisConnect232.ForeColor = Color.Indigo;
-            SetButtonBold(btConnect232);
-            SetButtonBold(btDisConnect232);
-            btGetInformation_Click(null, null);// 판독기 정보 가져오기
-        }
-        private void EnabledForm()
-        {
-            //panel1.Enabled = true;
-            //panel3.Enabled = true;
-            //panel4.Enabled = true;
-            //panel5.Enabled = true;
-            //panel6.Enabled = true;
-            gpb_address.Enabled = true;
-            groupBox3.Enabled = true;
-            gpb_RDVersion.Enabled = true;
-            gpb_DBM.Enabled = true;
-            gpb_Serial.Enabled = true;
-            gpb_Freq.Enabled = true;
-            btDefault.Enabled = true;
-            btGetInformation.Enabled = true;
-            gbp_buff.Enabled = true;
-        }
-        private void DisabledForm()
-        {
-            ////应答模式下
-            //lxLedControl1.Text = "0";
-            //lxLedControl2.Text = "0";
-            //lxLedControl3.Text = "0";
-            //lxLedControl4.Text = "0";
-            //lxLedControl5.Text = "0";
-            dataGridView1.Rows.Clear();
-            //dataGridView2.Rows.Clear();
-            //comboBox_EPC.Items.Clear();
-            text_RDVersion.Text = "";
-            text_Serial.Text = "";
-            timer_answer.Enabled = false;
-            btIventoryG2.Text = "Start";
-            //panel1.Enabled = false;
-            //panel3.Enabled = false;
-            //panel4.Enabled = false;
-            //panel5.Enabled = false;
-            //panel6.Enabled = false;
-            gpb_address.Enabled = false;
-            groupBox3.Enabled = false;
-            gpb_RDVersion.Enabled = false;
-            gpb_DBM.Enabled = false;
-            gpb_Serial.Enabled = false;
-            gpb_Freq.Enabled = false;
-            btDefault.Enabled = false;
-            btGetInformation.Enabled = false;
-            gbp_buff.Enabled = false;
-        }
+            int index = comboBoxRfidInventoryOperationSettingsPowerGain.SelectedIndex;
+            int powerGain = index + RFID.Power.MIN_POWER;
 
-        private void SetButtonBold(Button btnBold)
-        {
-            Font oldFont = btnBold.Font;
-            Font newFont = new Font(oldFont, oldFont.Style ^ FontStyle.Bold);
-            btnBold.Font = newFont;
-        }
+            int a = mReader.SetRadioPower(powerGain);
 
-        private void btDisConnect232_Click(object sender, EventArgs e)
-        {
-            if (frmcomportindex > 0)
-                fCmdRet = RWDev.CloseSpecComPort(frmcomportindex);
-            if (fCmdRet == 0) frmcomportindex = -1;
-            DisabledForm();
-            btConnect232.Enabled = true;
-            btDisConnect232.Enabled = false;
-
-            btConnect232.ForeColor = Color.Indigo;
-            btDisConnect232.ForeColor = Color.Black;
-            SetButtonBold(btConnect232);
-            SetButtonBold(btDisConnect232);
-        }
-
-        private void btDefault_Click(object sender, EventArgs e)
-        {
 
         }
-
-        private void BT_DBM_Click(object sender, EventArgs e)
+        void Update_GridView_RFID(string[] items)
         {
-            byte powerDbm = (byte)ComboBox_PowerDbm.SelectedIndex;
-            fCmdRet = RWDev.SetRfPower(ref fComAdr, powerDbm, frmcomportindex);
-            if (fCmdRet != 0)
-            {
-                string strLog = "Set power failed: " + GetReturnCodeDesc(fCmdRet);
-                WriteLog(lrtxtLog, strLog, 1);
-            }
-            else
-            {
-                string strLog = "Set power success ";
-                WriteLog(lrtxtLog, strLog, 0);
-            }
-        }
+            string sEPC = items[0].Substring(2);
+            string RSSI = items[1];
 
-
-        private void inventory()
-        {
-            byte Ant = 0;
-            int CardNum = 0;
-            int Totallen = 0;
-            int EPClen, m;
-            byte[] EPC = new byte[50000]; //핵심 친구
-            int CardIndex;
-            string temps, temp;
-            temp = "";
-            string sEPC;
-            byte MaskMem = 0;
-            byte[] MaskAdr = new byte[2];
-            byte MaskLen = 0;
-            byte[] MaskData = new byte[100];
-            byte MaskFlag = 0;
-            byte AdrTID = 0;
-            byte LenTID = 0;
-            AdrTID = 0;
-            LenTID = 6;
-            MaskFlag = 0;
-            int cbtime = System.Environment.TickCount;
             DataGridViewRow rows = new DataGridViewRow();
-            CardNum = 0;
-            fCmdRet = RWDev.Inventory_G2(ref fComAdr, Qvalue, Session, MaskMem, MaskAdr, MaskLen, MaskData, MaskFlag, AdrTID, LenTID, TIDFlag, Target, InAnt, Scantime, FastFlag, EPC, ref Ant, ref Totallen, ref CardNum, frmcomportindex);
-            total_turns = total_turns + 1;
-            int x_time = System.Environment.TickCount - cbtime;//命令时间 명령시간
-            string strLog = "Inventory: " + GetReturnCodeDesc(fCmdRet);
-            WriteLog(lrtxtLog, strLog, 0);
 
-            if ((fCmdRet == 1) | (fCmdRet == 2) | (fCmdRet == 3) | (fCmdRet == 4))//代表已查找结束， 검색이 끝났습니다.
+            bool isonlistview = false;
+            for (int i = 0; i < dataGrideView_RFID.RowCount; i++)
             {
-                byte[] daw = new byte[Totallen];
-                Array.Copy(EPC, daw, Totallen);
-                temps = ByteArrayToHexString(daw);
-                m = 0;
-                if (CardNum == 0)
+                rows = dataGrideView_RFID.Rows[i];
+
+
+                if ((dataGrideView_RFID.Rows[i].Cells[1].Value != null) && (sEPC == dataGrideView_RFID.Rows[i].Cells[1].Value.ToString()))
                 {
-                    if (Session > 1)
-                        AA_times = AA_times + 1;
-                    return;
-                }
-                AA_times = 0;
-                //antstr = Convert.ToString(Ant, 2).PadLeft(4, '0');
-                for (CardIndex = 0; CardIndex < CardNum; CardIndex++)
-                {
-                    EPClen = daw[m] + 1;
-                    temp = temps.Substring(m * 2 + 2, EPClen * 2);
-                    sEPC = temp.Substring(0, temp.Length - 2);
-                    string RSSI = Convert.ToInt32(temp.Substring(temp.Length - 2, 2), 16).ToString();
-                    m = m + EPClen + 1;
-                    if (sEPC.Length != (EPClen - 1) * 2)
+                    //rows = dataGrideView_RFID.Rows[i];
+                    int ntime = Convert.ToInt32(rows.Cells[2].Value.ToString());
+                    ntime = ntime + 1;
+                    if (ntime == 99999) ntime = 1;
+                    rows.Cells[2].Value = ntime;
+
+                    rows.Cells[3].Value = RSSI;
+
+                    if (rows.Cells[4].Value != null)
                     {
-                        return;
-                    }
-                    bool isonlistview = false;
-                    for (int i = 0; i < dataGridView1.RowCount; i++)
-                    {
-                        if ((dataGridView1.Rows[i].Cells[1].Value != null) && (sEPC == dataGridView1.Rows[i].Cells[1].Value.ToString()))
-                        {
-                            rows = dataGridView1.Rows[i];
-                            int ntime = Convert.ToInt32(rows.Cells[2].Value.ToString());
-                            ntime = ntime + 1;
-                            if (ntime == 99999) ntime = 1;
-                            rows.Cells[2].Value = ntime;
-
-                            rows.Cells[3].Value = RSSI;
-
-                            if (rows.Cells[4].Value != null)
-                            {
 
 
-                                int delta = (Convert.ToInt32(rows.Cells[2].Value.ToString()) - Convert.ToInt32(rows.Cells[4].Value.ToString()));
-                                rows.Cells[5].Value = Convert.ToString(delta);
-
-                              
-                                Find_MAX2();
-                                Find_MAX_RSSI();
-                        
 
 
-                            }
+
+                        Find_MAX2();
+                        //Find_MAX_RSSI();
 
 
-                            isonlistview = true;
-                            break;
-                        }
+
                     }
 
 
-
-                    if (!isonlistview)
-                    {
-                        string[] arr = new string[4];
-                        arr[0] = (dataGridView1.RowCount + 1).ToString();
-                        arr[1] = sEPC;
-                        arr[2] = "1";
-                        arr[3] = RSSI;
-                        dataGridView1.Rows.Insert(dataGridView1.RowCount, arr);
-                        if (rb_epc.Checked) { };
-                            
-                            // comboBox_EPC.Items.Add(sEPC);
-
-                        //  NowTag_lbl.Text = sEPC;
-                    }
+                    isonlistview = true;
+                    break;
                 }
             }
 
 
-           // lxLedControl3.Text = x_time.ToString();
-            if (x_time > CommunicationTime)
-                x_time = x_time - CommunicationTime;//减去通讯时间等于标签的实际时间 통신시간을 빼면 라벨의 실제시간과 같다.
-            int sulv = (CardNum * 1000) / x_time;//速度等于张数/时间 속도는 장수/시간과 같다.
-          //  lxLedControl2.Text = sulv.ToString();
-            total_tagnum = total_tagnum + CardNum;
-          //  lxLedControl4.Text = total_tagnum.ToString();
-            x_time = System.Environment.TickCount - total_time;//总时间 총시간
-           // lxLedControl5.Text = x_time.ToString();
-           // lxLedControl1.Text = dataGridView1.RowCount.ToString();
 
-
-        }
-        private void btIventoryG2_Click(object sender, EventArgs e)
-        {
-            Timer_Intensity.Enabled = !Timer_Intensity.Enabled; // done by JH
-            timer_answer.Enabled = !timer_answer.Enabled;
-            if (timer_answer.Enabled)
+            if (!isonlistview)
             {
-                //lxLedControl1.Text = "0";
-                //lxLedControl2.Text = "0";
-                //lxLedControl3.Text = "0";
-                //lxLedControl4.Text = "0";
-                //lxLedControl5.Text = "0";
-                dataGridView1.Rows.Clear();
-                //comboBox_EPC.Items.Clear();
-                AA_times = 0;
-                Scantime = Convert.ToByte(com_scantime.SelectedIndex + 3);
-                Qvalue = Convert.ToByte(com_Q.SelectedIndex);
-                Session = Convert.ToByte(com_S.SelectedIndex);
-                if (rb_epc.Checked)
-                    TIDFlag = 0;
-                else
-                    TIDFlag = 1;
-                total_turns = 0;
-                total_tagnum = 0;
-                targettimes = Convert.ToInt32(text_target.Text);
-                total_time = System.Environment.TickCount;
-                fIsInventoryScan = false;
-                Target = 0;
-                btIventoryG2.BackColor = Color.Indigo;
-                btIventoryG2.Text = "Stop";
-            }
-            else
-            {
-                btIventoryG2.BackColor = Color.Transparent;
-                btIventoryG2.Text = "Start";
-            }
-        }
+                string[] arr = new string[4];
+                arr[0] = (dataGrideView_RFID.RowCount + 1).ToString();
+                arr[1] = sEPC;
+                arr[2] = "1";
+                arr[3] = RSSI;
+                dataGrideView_RFID.Rows.Insert(dataGrideView_RFID.RowCount, arr);
+                //if (rb_epc.Checked) { };
 
-        private void SetRadioButtonBold(CheckBox ckBold)
-        {
-            Font oldFont = ckBold.Font;
-            Font newFont = new Font(oldFont, oldFont.Style ^ FontStyle.Bold);
-            ckBold.Font = newFont;
-        }
+                // comboBox_EPC.Items.Add(sEPC);
 
-
-        #region UTIL
-        private string GetReturnCodeDesc(int cmdRet)
-        {
-            switch (cmdRet)
-            {
-                case 0x00:
-                    return "successfully";
-                case 0x01:
-                    return "Return before Inventory finished";
-                case 0x02:
-                    return "the Inventory-scan-time overflow";
-                case 0x03:
-                    return "More Data";
-                case 0x04:
-                    return "Reader module MCU is Full";
-                case 0x05:
-                    return "Access Password Error";
-                case 0x09:
-                    return "Destroy Password Error";
-                case 0x0a:
-                    return "Destroy Password Error Cannot be Zero";
-                case 0x0b:
-                    return "Tag Not Support the command";
-                case 0x0c:
-                    return "Use the commmand,Access Password Cannot be Zero";
-                case 0x0d:
-                    return "Tag is protected,cannot set it again";
-                case 0x0e:
-                    return "Tag is unprotected,no need to reset it";
-                case 0x10:
-                    return "There is some locked bytes,write fail";
-                case 0x11:
-                    return "can not lock it";
-                case 0x12:
-                    return "is locked,cannot lock it again";
-                case 0x13:
-                    return "Parameter Save Fail,Can Use Before Power";
-                case 0x14:
-                    return "Cannot adjust";
-                case 0x15:
-                    return "Return before Inventory finished";
-                case 0x16:
-                    return "Inventory-Scan-Time overflow";
-                case 0x17:
-                    return "More Data";
-                case 0x18:
-                    return "Reader module MCU is full";
-                case 0x19:
-                    return "Not Support Command Or AccessPassword Cannot be Zero";
-                case 0x1A:
-                    return "Perform error tag custom function";
-                case 0xF8:
-                    return "Antenna connection detect errors";
-                case 0xF9:
-                    return "Command execution error";
-                case 0xFA:
-                    return "Get Tag,Poor Communication,Inoperable";
-                case 0xFB:
-                    return "No Tag Operable";
-                case 0xFC:
-                    return "Tag Return ErrorCode";
-                case 0xFD:
-                    return "Command length wrong";
-                case 0xFE:
-                    return "Illegal command";
-                case 0xFF:
-                    return "Parameter Error";
-                case 0x30:
-                    return "Communication error";
-                case 0x31:
-                    return "CRC checksummat error";
-                case 0x32:
-                    return "Return data length error";
-                case 0x33:
-                    return "Communication busy";
-                case 0x34:
-                    return "Busy,command is being executed";
-                case 0x35:
-                    return "ComPort Opened";
-                case 0x36:
-                    return "ComPort Closed";
-                case 0x37:
-                    return "Invalid Handle";
-                case 0x38:
-                    return "Invalid Port";
-                case 0xEE:
-                    return "Return Command Error";
-                default:
-                    return "";
-            }
-        }
-
-        private void timer_answer_Tick(object sender, EventArgs e)
-        {
-
-            for (int i = 0; i < dataGridView1.RowCount; i++)
-            {
-
-                {
-                    try
-                    {
-                        if (dataGridView1.Rows[i].Cells[2].Value == null || dataGridView1.Rows[i].Cells[4].Value == null) continue;
-                        int delta = (Convert.ToInt32(dataGridView1.Rows[i].Cells[2].Value.ToString()) - Convert.ToInt32(dataGridView1.Rows[i].Cells[4].Value.ToString()));
-                        dataGridView1.Rows[i].Cells[5].Value = Convert.ToString(delta);
-                    }
-                    catch { }
-                }
-
-
+                //  NowTag_lbl.Text = sEPC;
             }
 
-            for (int i = 0; i < dataGridView1.RowCount; i++)
-            {
-
-                {
-                    try
-                    {
-
-                        dataGridView1.Rows[i].Cells[3].Value = 0;
-                    }
-                    catch { }
-                }
-
-
-            }
-
-            if (fIsInventoryScan)
-                return;
-            fIsInventoryScan = true;
-            FastFlag = 1;
-            InAnt = 0x80;
-            if (Session == 0 || Session == 1)
-            {
-                Target = (byte)com_Target.SelectedIndex;
-            }
-            else
-            {
-                if ((check_num.Checked) && (AA_times + 1 > targettimes))
-                {
-                    Target = Convert.ToByte(1 - Target);  //如果连续2次未读到卡片，A/B状态切换。
-                }
-                else if (!check_num.Checked)
-                {
-                    Target = (byte)com_Target.SelectedIndex;
-                }
-            }
-            inventory();
-            //================
-
-            //================
-            fIsInventoryScan = false;
         }
 
         void Find_MAX2() //done By JH 느린가..? RSSI가 낮아도 현재 읽히고 있는 친구일수있음.
         {
             int[] delta = new int[100];
-            int[] RSSI = new int[100];
+            double[] RSSI = new double[100];
             string[] EPC = new string[100];
 
             string max_EPC = "NaN";
-         
 
-            for (int i = 0; i < dataGridView1.RowCount; i++)
+
+            for (int i = 0; i < dataGrideView_RFID.RowCount; i++)
             {
 
-                if (dataGridView1.Rows[i].Cells[5] == null || dataGridView1.Rows[i].Cells[5].Value==null) continue;
+                if (dataGrideView_RFID.Rows[i].Cells[5].Value == null) continue;
                 try
                 {
-                    delta[i] = Convert.ToInt32(dataGridView1.Rows[i].Cells[5].Value.ToString());
+                    //delta[i] = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[5].Value.ToString());
+                    delta[i] = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[5].Value);
                 }
                 catch { }
 
-                RSSI[i] = Convert.ToInt32(dataGridView1.Rows[i].Cells[3].Value.ToString());
-                EPC[i] = (dataGridView1.Rows[i].Cells[1].Value.ToString());
+                //RSSI[i] = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[3].Value.ToString());
+                RSSI[i] = Convert.ToDouble(dataGrideView_RFID.Rows[i].Cells[3].Value.ToString());
+                //EPC[i] = (dataGrideView_RFID.Rows[i].Cells[1].Value.ToString());
+                EPC[i] = (dataGrideView_RFID.Rows[i].Cells[1].Value.ToString());
 
             }
 
             int temp;
+            double temp_d;
             string temps;
-            for (int i = 0; i < dataGridView1.RowCount - 1; i++)
+            for (int i = 0; i < dataGrideView_RFID.RowCount - 1; i++)
             {
-                for (int j = 0; j < dataGridView1.RowCount - 1 - i; j++)
+                for (int j = 0; j < dataGrideView_RFID.RowCount - 1 - i; j++)
                 {
                     if (delta[j] < delta[j + 1])
                     {
@@ -1442,9 +1371,9 @@ namespace RNCL_COAL
                         delta[j] = delta[j + 1];
                         delta[j + 1] = temp;
 
-                        temp = RSSI[j];
+                        temp_d = RSSI[j];
                         RSSI[j] = RSSI[j + 1];
-                        RSSI[j + 1] = temp;
+                        RSSI[j + 1] = temp_d;
 
                         temps = EPC[j];
                         EPC[j] = EPC[j + 1];
@@ -1454,20 +1383,23 @@ namespace RNCL_COAL
                     }
                 }
             }
+            int a = 0;
 
+            int tmp = delta[0];
             int num = 0;
-            for (int i = 0; i < dataGridView1.RowCount; i++)
+            for (int i = 0; i < dataGrideView_RFID.RowCount; i++)
             {
                 if (delta[i] != delta[i + 1]) num = i;
 
             }
 
-            int max = 0;
+            double max_RSSI = 0;
             for (int i = 0; i < num; i++)
             {
-                if (max < RSSI[i])
+                if (max_RSSI < Math.Abs(RSSI[i]))
                 {
-                    max = RSSI[i];
+
+                    max_RSSI = Math.Abs(RSSI[i]);
                     max_EPC = EPC[i];
                 }
             }
@@ -1478,50 +1410,46 @@ namespace RNCL_COAL
             {
                 int ttmp = Convert.ToInt32(max_EPC);
                 max_EPC = Convert.ToString(ttmp);
-                label40.Text = max_EPC;
-            }
-            catch
-            {
-
-            }
-
-
-        }
-
-        void Find_MAX_RSSI() //done By JH 느린가..? RSSI가 낮아도 현재 읽히고 있는 친구일수있음.
-        {
-            int max = 0;
-            string max_EPC = "NaN";
-            for (int i = 0; i < dataGridView1.RowCount; i++)
-            {
-                if (max < Convert.ToInt32(dataGridView1.Rows[i].Cells[3].Value.ToString()))
-                {
-                    max = Convert.ToInt32(dataGridView1.Rows[i].Cells[3].Value.ToString());
-                    max_EPC = dataGridView1.Rows[i].Cells[1].Value.ToString();
-                }
-            }
-            try
-            {
-                int ttmp = Convert.ToInt32(max_EPC);
-                max_EPC = Convert.ToString(ttmp);
-                label40.Text = max_EPC;
                 txtCurTag.Text = max_EPC;
+                label40.Text= max_EPC;
             }
             catch
             {
 
             }
+
+
         }
 
-        private void Timer_Intensity_Tick(object sender, EventArgs e)
-        {
 
-            for (int i = 0; i < dataGridView1.RowCount; i++)
+        public void Get_RFID_Intensity()
+        {
+            while (mRfidInventoryStarted)
             {
-                dataGridView1.Rows[i].Cells[4].Value = Convert.ToInt32(dataGridView1.Rows[i].Cells[2].Value.ToString());
+
+
+                for (int i = 0; i < dataGrideView_RFID.RowCount; i++)
+                {
+                    if (dataGrideView_RFID.Rows[i].Cells[4].Value != null)
+                    {
+                        int delta = (Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[2].Value.ToString()) - Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[4].Value.ToString()));
+                        dataGrideView_RFID.Rows[i].Cells[5].Value = Convert.ToString(delta);
+
+                    }
+
+                    if (dataGrideView_RFID.Rows[i].Cells[2].Value == null) continue;
+                    dataGrideView_RFID.Rows[i].Cells[4].Value = dataGrideView_RFID.Rows[i].Cells[2].Value.ToString();
+                    //dataGrideView_RFID.Rows[i].Cells[4].Value = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[2].Value.ToString());
+                }
+
+                Thread.Sleep(500);
             }
 
         }
+
+
+        #region UTIL
+
 
         private void groupBoxDebug_Enter(object sender, EventArgs e)
         {
@@ -1540,12 +1468,12 @@ namespace RNCL_COAL
 
         private void tileRFID_Click(object sender, EventArgs e)
         {
-            mainTab.SelectedTab = this.tabPage2;
+            mainTab.SelectedTab = this.tabPage3;
         }
 
         private void tileSETTING_Click(object sender, EventArgs e)
         {
-            mainTab.SelectedTab = this.tabPage3;
+            mainTab.SelectedTab = this.tabPage2;
         }
         private void tabWiFi_Click(object sender, EventArgs e)
         {
@@ -1703,9 +1631,18 @@ namespace RNCL_COAL
         {
             using (var client = new WebClient())
             {
-                client.UploadFileCompleted += (s, e) => lbl_progress2.Text = "Upload file completed.";
-                client.UploadProgressChanged += (s, e) => progressBar2.Value = e.ProgressPercentage;
-                client.UploadProgressChanged +=(s,e)=>lbl_progress2.Text= "Uploaded " +filename +" : "+ e.BytesSent + " of " + e.TotalBytesToSend;
+                client.UploadFileCompleted += (s, e) => Invoke(new MethodInvoker(() =>
+                {
+                    lbl_progress2.Text = "Upload file completed.";
+                })); 
+                client.UploadProgressChanged += (s, e) => Invoke(new MethodInvoker(() =>
+                {
+                    progressBar2.Value = e.ProgressPercentage;
+                })); 
+                client.UploadProgressChanged += (s, e) => Invoke(new MethodInvoker(() =>
+                {
+                    lbl_progress2.Text = "Uploaded " + filename + " : " + e.BytesSent + " of " + e.TotalBytesToSend;
+                })); 
                 string uri = "http://192.168.0.150/fupload";
                 client.DownloadData("http://192.168.0.150/u" + foldername);
                 client.Headers.Add("filename", System.IO.Path.GetFileName(filename));
@@ -1765,6 +1702,8 @@ namespace RNCL_COAL
                 progressBar1.Value = int.Parse(Math.Truncate(percentage).ToString());
             });
         }
+
+
         void client_UploadProgressChanged(object sender, UploadProgressChangedEventArgs e)
         {
             this.BeginInvoke((MethodInvoker)delegate {

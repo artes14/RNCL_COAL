@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnConnect1 = new System.Windows.Forms.Button();
             this.btnStream = new System.Windows.Forms.Button();
@@ -36,7 +35,6 @@
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnCalibrate = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.tempTimer = new System.Windows.Forms.Timer(this.components);
             this.lblTemp = new System.Windows.Forms.Label();
             this.tempBox = new System.Windows.Forms.TextBox();
             this.btnSave = new System.Windows.Forms.Button();
@@ -72,59 +70,34 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.Theraml_Group = new System.Windows.Forms.GroupBox();
             this.RFID_Group = new System.Windows.Forms.GroupBox();
-            this.gpb_rs232 = new System.Windows.Forms.GroupBox();
-            this.btDisConnect232 = new System.Windows.Forms.Button();
-            this.btConnect232 = new System.Windows.Forms.Button();
-            this.txtPort = new System.Windows.Forms.TextBox();
-            this.lblPort = new System.Windows.Forms.Label();
-            this.gpb_DBM = new System.Windows.Forms.GroupBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.ComboBox_PowerDbm = new System.Windows.Forms.ComboBox();
-            this.BT_DBM = new System.Windows.Forms.Button();
-            this.gpb_address = new System.Windows.Forms.GroupBox();
-            this.text_address = new System.Windows.Forms.TextBox();
-            this.btaddress = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.gbp_buff = new System.Windows.Forms.GroupBox();
-            this.rb496 = new System.Windows.Forms.RadioButton();
-            this.rb128 = new System.Windows.Forms.RadioButton();
-            this.btGetEPCandTIDLen = new System.Windows.Forms.Button();
-            this.btSetEPCandTIDLen = new System.Windows.Forms.Button();
-            this.btGetInformation = new System.Windows.Forms.Button();
-            this.btDefault = new System.Windows.Forms.Button();
+            this.ConnectButton = new System.Windows.Forms.Button();
+            this.TagListView = new System.Windows.Forms.ListView();
+            this.comboBoxRfidInventoryOperationSettingsPowerGain = new System.Windows.Forms.ComboBox();
+            this.labelRfidInventoryOperationSettingsPowerGain = new System.Windows.Forms.Label();
+            this.labelBaudrate = new System.Windows.Forms.Label();
+            this.SerialBaudrateComboBox = new System.Windows.Forms.ComboBox();
+            this.labelAntennaPorts = new System.Windows.Forms.Label();
+            this.AntennaPortsComboBox = new System.Windows.Forms.ComboBox();
+            this.labelPort = new System.Windows.Forms.Label();
+            this.SerialPortComboBox = new System.Windows.Forms.ComboBox();
+            this.ModuleValueLabel = new System.Windows.Forms.Label();
+            this.labelModule = new System.Windows.Forms.Label();
             this.metroTile1 = new MetroFramework.Controls.MetroTile();
             this.lrtxtLog = new System.Windows.Forms.RichTextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.TagInventoryButton = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGrideView_RFID = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Times_prev = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Times_delta = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btIventoryG2 = new System.Windows.Forms.Button();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.com_Target = new System.Windows.Forms.ComboBox();
-            this.label79 = new System.Windows.Forms.Label();
-            this.com_scantime = new System.Windows.Forms.ComboBox();
-            this.label39 = new System.Windows.Forms.Label();
-            this.com_S = new System.Windows.Forms.ComboBox();
-            this.label32 = new System.Windows.Forms.Label();
-            this.com_Q = new System.Windows.Forms.ComboBox();
-            this.label31 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.metroTile2 = new MetroFramework.Controls.MetroTile();
             this.label38 = new System.Windows.Forms.Label();
             this.label40 = new System.Windows.Forms.Label();
-            this.rb_tid = new System.Windows.Forms.RadioButton();
-            this.rb_epc = new System.Windows.Forms.RadioButton();
             this.tabWiFi = new System.Windows.Forms.TabPage();
             this.lbl_datacount = new System.Windows.Forms.Label();
             this.lbl_progress = new System.Windows.Forms.Label();
@@ -161,12 +134,9 @@
             this.lblLowTemp = new System.Windows.Forms.Label();
             this.lblHighTmp = new System.Windows.Forms.Label();
             this.ComboBox_COM = new System.Windows.Forms.ComboBox();
-            this.timer_answer = new System.Windows.Forms.Timer(this.components);
-            this.Timer_Intensity = new System.Windows.Forms.Timer(this.components);
             this.groupBoxDebug = new System.Windows.Forms.GroupBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label37 = new System.Windows.Forms.Label();
             this.mainTab.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -176,15 +146,9 @@
             this.tabPage2.SuspendLayout();
             this.Theraml_Group.SuspendLayout();
             this.RFID_Group.SuspendLayout();
-            this.gpb_rs232.SuspendLayout();
-            this.gpb_DBM.SuspendLayout();
-            this.gpb_address.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.gbp_buff.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.groupBox4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGrideView_RFID)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.tabWiFi.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -262,10 +226,6 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(203, 14);
             this.textBox1.TabIndex = 5;
-            // 
-            // tempTimer
-            // 
-            this.tempTimer.Tick += new System.EventHandler(this.tempTimer_Tick);
             // 
             // lblTemp
             // 
@@ -382,16 +342,16 @@
             // 
             this.txtCurTag.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtCurTag.Font = new System.Drawing.Font("굴림", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.txtCurTag.Location = new System.Drawing.Point(672, 12);
+            this.txtCurTag.Location = new System.Drawing.Point(690, 13);
             this.txtCurTag.Name = "txtCurTag";
-            this.txtCurTag.Size = new System.Drawing.Size(108, 28);
+            this.txtCurTag.Size = new System.Drawing.Size(74, 28);
             this.txtCurTag.TabIndex = 21;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("나눔스퀘어라운드 Regular", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label3.Location = new System.Drawing.Point(488, 14);
+            this.label3.Location = new System.Drawing.Point(484, 13);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(200, 26);
             this.label3.TabIndex = 22;
@@ -631,7 +591,6 @@
             this.pictureBox1.TabIndex = 6;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseLeave += new System.EventHandler(this.pictureBox1_MouseLeave);
-            this.pictureBox1.MouseHover += new System.EventHandler(this.pictureBox1_MouseHover);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             // 
             // picColorBar
@@ -673,13 +632,18 @@
             // 
             // RFID_Group
             // 
-            this.RFID_Group.Controls.Add(this.gpb_rs232);
-            this.RFID_Group.Controls.Add(this.gpb_DBM);
-            this.RFID_Group.Controls.Add(this.gpb_address);
-            this.RFID_Group.Controls.Add(this.groupBox3);
-            this.RFID_Group.Controls.Add(this.gbp_buff);
-            this.RFID_Group.Controls.Add(this.btGetInformation);
-            this.RFID_Group.Controls.Add(this.btDefault);
+            this.RFID_Group.Controls.Add(this.ConnectButton);
+            this.RFID_Group.Controls.Add(this.TagListView);
+            this.RFID_Group.Controls.Add(this.comboBoxRfidInventoryOperationSettingsPowerGain);
+            this.RFID_Group.Controls.Add(this.labelRfidInventoryOperationSettingsPowerGain);
+            this.RFID_Group.Controls.Add(this.labelBaudrate);
+            this.RFID_Group.Controls.Add(this.SerialBaudrateComboBox);
+            this.RFID_Group.Controls.Add(this.labelAntennaPorts);
+            this.RFID_Group.Controls.Add(this.AntennaPortsComboBox);
+            this.RFID_Group.Controls.Add(this.labelPort);
+            this.RFID_Group.Controls.Add(this.SerialPortComboBox);
+            this.RFID_Group.Controls.Add(this.ModuleValueLabel);
+            this.RFID_Group.Controls.Add(this.labelModule);
             this.RFID_Group.Location = new System.Drawing.Point(14, 64);
             this.RFID_Group.Name = "RFID_Group";
             this.RFID_Group.Size = new System.Drawing.Size(519, 296);
@@ -687,297 +651,138 @@
             this.RFID_Group.TabStop = false;
             this.RFID_Group.Text = "RFID";
             // 
-            // gpb_rs232
+            // ConnectButton
             // 
-            this.gpb_rs232.Controls.Add(this.btDisConnect232);
-            this.gpb_rs232.Controls.Add(this.btConnect232);
-            this.gpb_rs232.Controls.Add(this.txtPort);
-            this.gpb_rs232.Controls.Add(this.lblPort);
-            this.gpb_rs232.Location = new System.Drawing.Point(13, 30);
-            this.gpb_rs232.Name = "gpb_rs232";
-            this.gpb_rs232.Size = new System.Drawing.Size(159, 92);
-            this.gpb_rs232.TabIndex = 74;
-            this.gpb_rs232.TabStop = false;
-            this.gpb_rs232.Text = "RS232";
-            this.gpb_rs232.Enter += new System.EventHandler(this.gpb_rs232_Enter);
+            this.ConnectButton.Enabled = false;
+            this.ConnectButton.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ConnectButton.ForeColor = System.Drawing.Color.OrangeRed;
+            this.ConnectButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ConnectButton.ImageIndex = 0;
+            this.ConnectButton.Location = new System.Drawing.Point(320, 20);
+            this.ConnectButton.Name = "ConnectButton";
+            this.ConnectButton.Size = new System.Drawing.Size(156, 36);
+            this.ConnectButton.TabIndex = 89;
+            this.ConnectButton.Text = "CONNECT";
+            this.ConnectButton.UseVisualStyleBackColor = true;
+            this.ConnectButton.Click += new System.EventHandler(this.ConnectButton_Click);
             // 
-            // btDisConnect232
+            // TagListView
             // 
-            this.btDisConnect232.Enabled = false;
-            this.btDisConnect232.Location = new System.Drawing.Point(6, 62);
-            this.btDisConnect232.Name = "btDisConnect232";
-            this.btDisConnect232.Size = new System.Drawing.Size(147, 23);
-            this.btDisConnect232.TabIndex = 20;
-            this.btDisConnect232.Text = "Disconnect";
-            this.btDisConnect232.UseVisualStyleBackColor = true;
-            this.btDisConnect232.Click += new System.EventHandler(this.btDisConnect232_Click);
+            this.TagListView.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TagListView.HideSelection = false;
+            this.TagListView.Location = new System.Drawing.Point(23, 148);
+            this.TagListView.Margin = new System.Windows.Forms.Padding(2);
+            this.TagListView.Name = "TagListView";
+            this.TagListView.Size = new System.Drawing.Size(462, 130);
+            this.TagListView.TabIndex = 88;
+            this.TagListView.UseCompatibleStateImageBehavior = false;
+            this.TagListView.View = System.Windows.Forms.View.Details;
             // 
-            // btConnect232
+            // comboBoxRfidInventoryOperationSettingsPowerGain
             // 
-            this.btConnect232.Location = new System.Drawing.Point(6, 39);
-            this.btConnect232.Name = "btConnect232";
-            this.btConnect232.Size = new System.Drawing.Size(147, 23);
-            this.btConnect232.TabIndex = 19;
-            this.btConnect232.Text = "Connect";
-            this.btConnect232.UseVisualStyleBackColor = true;
-            this.btConnect232.Click += new System.EventHandler(this.btConnect232_Click);
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.FormattingEnabled = true;
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.Location = new System.Drawing.Point(93, 110);
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.Name = "comboBoxRfidInventoryOperationSettingsPowerGain";
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.Size = new System.Drawing.Size(134, 21);
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.TabIndex = 87;
+            this.comboBoxRfidInventoryOperationSettingsPowerGain.SelectedIndexChanged += new System.EventHandler(this.comboBoxRfidInventoryOperationSettingsPowerGain_SelectedIndexChanged);
             // 
-            // txtPort
+            // labelRfidInventoryOperationSettingsPowerGain
             // 
-            this.txtPort.Location = new System.Drawing.Point(98, 15);
-            this.txtPort.Name = "txtPort";
-            this.txtPort.Size = new System.Drawing.Size(50, 21);
-            this.txtPort.TabIndex = 1;
-            this.txtPort.Text = "34";
+            this.labelRfidInventoryOperationSettingsPowerGain.AutoSize = true;
+            this.labelRfidInventoryOperationSettingsPowerGain.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelRfidInventoryOperationSettingsPowerGain.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.labelRfidInventoryOperationSettingsPowerGain.Location = new System.Drawing.Point(15, 113);
+            this.labelRfidInventoryOperationSettingsPowerGain.Name = "labelRfidInventoryOperationSettingsPowerGain";
+            this.labelRfidInventoryOperationSettingsPowerGain.Size = new System.Drawing.Size(66, 13);
+            this.labelRfidInventoryOperationSettingsPowerGain.TabIndex = 86;
+            this.labelRfidInventoryOperationSettingsPowerGain.Text = "Power Gain";
             // 
-            // lblPort
+            // labelBaudrate
             // 
-            this.lblPort.AutoSize = true;
-            this.lblPort.Location = new System.Drawing.Point(18, 18);
-            this.lblPort.Name = "lblPort";
-            this.lblPort.Size = new System.Drawing.Size(65, 12);
-            this.lblPort.TabIndex = 2;
-            this.lblPort.Text = "RFID Port :";
+            this.labelBaudrate.AutoSize = true;
+            this.labelBaudrate.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelBaudrate.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.labelBaudrate.Location = new System.Drawing.Point(317, 77);
+            this.labelBaudrate.Name = "labelBaudrate";
+            this.labelBaudrate.Size = new System.Drawing.Size(58, 15);
+            this.labelBaudrate.TabIndex = 85;
+            this.labelBaudrate.Text = "Baudrate";
+            this.labelBaudrate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // gpb_DBM
+            // SerialBaudrateComboBox
             // 
-            this.gpb_DBM.Controls.Add(this.label10);
-            this.gpb_DBM.Controls.Add(this.ComboBox_PowerDbm);
-            this.gpb_DBM.Controls.Add(this.BT_DBM);
-            this.gpb_DBM.Location = new System.Drawing.Point(13, 128);
-            this.gpb_DBM.Name = "gpb_DBM";
-            this.gpb_DBM.Size = new System.Drawing.Size(250, 77);
-            this.gpb_DBM.TabIndex = 79;
-            this.gpb_DBM.TabStop = false;
-            this.gpb_DBM.Text = "Power";
+            this.SerialBaudrateComboBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SerialBaudrateComboBox.FormattingEnabled = true;
+            this.SerialBaudrateComboBox.Location = new System.Drawing.Point(391, 75);
+            this.SerialBaudrateComboBox.Name = "SerialBaudrateComboBox";
+            this.SerialBaudrateComboBox.Size = new System.Drawing.Size(94, 21);
+            this.SerialBaudrateComboBox.TabIndex = 84;
             // 
-            // label10
+            // labelAntennaPorts
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(128, 26);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(31, 12);
-            this.label10.TabIndex = 25;
-            this.label10.Text = "dBm";
+            this.labelAntennaPorts.AutoSize = true;
+            this.labelAntennaPorts.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelAntennaPorts.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.labelAntennaPorts.Location = new System.Drawing.Point(14, 77);
+            this.labelAntennaPorts.Name = "labelAntennaPorts";
+            this.labelAntennaPorts.Size = new System.Drawing.Size(62, 15);
+            this.labelAntennaPorts.TabIndex = 82;
+            this.labelAntennaPorts.Text = "Ant. Ports";
+            this.labelAntennaPorts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // ComboBox_PowerDbm
+            // AntennaPortsComboBox
             // 
-            this.ComboBox_PowerDbm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboBox_PowerDbm.FormattingEnabled = true;
-            this.ComboBox_PowerDbm.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15",
-            "16",
-            "17",
-            "18",
-            "19",
-            "20",
-            "21",
-            "22",
-            "23",
-            "24",
-            "25",
-            "26"});
-            this.ComboBox_PowerDbm.Location = new System.Drawing.Point(6, 23);
-            this.ComboBox_PowerDbm.Name = "ComboBox_PowerDbm";
-            this.ComboBox_PowerDbm.Size = new System.Drawing.Size(116, 20);
-            this.ComboBox_PowerDbm.TabIndex = 24;
+            this.AntennaPortsComboBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AntennaPortsComboBox.FormattingEnabled = true;
+            this.AntennaPortsComboBox.Location = new System.Drawing.Point(93, 75);
+            this.AntennaPortsComboBox.Name = "AntennaPortsComboBox";
+            this.AntennaPortsComboBox.Size = new System.Drawing.Size(48, 21);
+            this.AntennaPortsComboBox.TabIndex = 80;
             // 
-            // BT_DBM
+            // labelPort
             // 
-            this.BT_DBM.Location = new System.Drawing.Point(165, 21);
-            this.BT_DBM.Name = "BT_DBM";
-            this.BT_DBM.Size = new System.Drawing.Size(66, 34);
-            this.BT_DBM.TabIndex = 23;
-            this.BT_DBM.Text = "Set";
-            this.BT_DBM.UseVisualStyleBackColor = true;
-            this.BT_DBM.Click += new System.EventHandler(this.BT_DBM_Click);
+            this.labelPort.AutoSize = true;
+            this.labelPort.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelPort.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.labelPort.Location = new System.Drawing.Point(171, 77);
+            this.labelPort.Name = "labelPort";
+            this.labelPort.Size = new System.Drawing.Size(38, 15);
+            this.labelPort.TabIndex = 83;
+            this.labelPort.Text = "Serial";
+            this.labelPort.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // gpb_address
+            // SerialPortComboBox
             // 
-            this.gpb_address.Controls.Add(this.text_address);
-            this.gpb_address.Controls.Add(this.btaddress);
-            this.gpb_address.Location = new System.Drawing.Point(189, 30);
-            this.gpb_address.Name = "gpb_address";
-            this.gpb_address.Size = new System.Drawing.Size(132, 92);
-            this.gpb_address.TabIndex = 75;
-            this.gpb_address.TabStop = false;
-            this.gpb_address.Text = "Reader address";
+            this.SerialPortComboBox.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SerialPortComboBox.FormattingEnabled = true;
+            this.SerialPortComboBox.Location = new System.Drawing.Point(221, 75);
+            this.SerialPortComboBox.Name = "SerialPortComboBox";
+            this.SerialPortComboBox.Size = new System.Drawing.Size(79, 21);
+            this.SerialPortComboBox.TabIndex = 81;
             // 
-            // text_address
+            // ModuleValueLabel
             // 
-            this.text_address.Location = new System.Drawing.Point(23, 21);
-            this.text_address.MaxLength = 2;
-            this.text_address.Name = "text_address";
-            this.text_address.Size = new System.Drawing.Size(72, 21);
-            this.text_address.TabIndex = 24;
-            this.text_address.Text = "00";
+            this.ModuleValueLabel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.ModuleValueLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ModuleValueLabel.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.ModuleValueLabel.Location = new System.Drawing.Point(76, 26);
+            this.ModuleValueLabel.Name = "ModuleValueLabel";
+            this.ModuleValueLabel.Size = new System.Drawing.Size(194, 18);
+            this.ModuleValueLabel.TabIndex = 79;
             // 
-            // btaddress
+            // labelModule
             // 
-            this.btaddress.Location = new System.Drawing.Point(23, 48);
-            this.btaddress.Name = "btaddress";
-            this.btaddress.Size = new System.Drawing.Size(72, 23);
-            this.btaddress.TabIndex = 23;
-            this.btaddress.Text = "Set";
-            this.btaddress.UseVisualStyleBackColor = true;
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.comboBox2);
-            this.groupBox3.Controls.Add(this.label11);
-            this.groupBox3.Controls.Add(this.comboBox1);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Controls.Add(this.button3);
-            this.groupBox3.Controls.Add(this.button4);
-            this.groupBox3.Location = new System.Drawing.Point(273, 144);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(240, 134);
-            this.groupBox3.TabIndex = 83;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Reader Work Time Parameter";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(3, 94);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(140, 20);
-            this.comboBox2.TabIndex = 13;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(10, 69);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(133, 12);
-            this.label11.TabIndex = 12;
-            this.label11.Text = "Key-trigger-read-time:";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(6, 35);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(107, 20);
-            this.comboBox1.TabIndex = 11;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 20);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(88, 12);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Standby Time:";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(155, 90);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(68, 23);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "Get";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(155, 35);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(68, 26);
-            this.button4.TabIndex = 8;
-            this.button4.Text = "Set";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // gbp_buff
-            // 
-            this.gbp_buff.Controls.Add(this.rb496);
-            this.gbp_buff.Controls.Add(this.rb128);
-            this.gbp_buff.Controls.Add(this.btGetEPCandTIDLen);
-            this.gbp_buff.Controls.Add(this.btSetEPCandTIDLen);
-            this.gbp_buff.Location = new System.Drawing.Point(11, 207);
-            this.gbp_buff.Name = "gbp_buff";
-            this.gbp_buff.Size = new System.Drawing.Size(256, 71);
-            this.gbp_buff.TabIndex = 82;
-            this.gbp_buff.TabStop = false;
-            this.gbp_buff.Text = "Buffer EPC/TID length";
-            // 
-            // rb496
-            // 
-            this.rb496.AutoSize = true;
-            this.rb496.Location = new System.Drawing.Point(66, 32);
-            this.rb496.Name = "rb496";
-            this.rb496.Size = new System.Drawing.Size(54, 16);
-            this.rb496.TabIndex = 11;
-            this.rb496.Text = "496bit";
-            this.rb496.UseVisualStyleBackColor = true;
-            // 
-            // rb128
-            // 
-            this.rb128.AutoSize = true;
-            this.rb128.Checked = true;
-            this.rb128.Location = new System.Drawing.Point(6, 32);
-            this.rb128.Name = "rb128";
-            this.rb128.Size = new System.Drawing.Size(54, 16);
-            this.rb128.TabIndex = 10;
-            this.rb128.TabStop = true;
-            this.rb128.Text = "128bit";
-            this.rb128.UseVisualStyleBackColor = true;
-            // 
-            // btGetEPCandTIDLen
-            // 
-            this.btGetEPCandTIDLen.Location = new System.Drawing.Point(128, 45);
-            this.btGetEPCandTIDLen.Name = "btGetEPCandTIDLen";
-            this.btGetEPCandTIDLen.Size = new System.Drawing.Size(105, 23);
-            this.btGetEPCandTIDLen.TabIndex = 9;
-            this.btGetEPCandTIDLen.Text = "Get";
-            this.btGetEPCandTIDLen.UseVisualStyleBackColor = true;
-            // 
-            // btSetEPCandTIDLen
-            // 
-            this.btSetEPCandTIDLen.Location = new System.Drawing.Point(128, 20);
-            this.btSetEPCandTIDLen.Name = "btSetEPCandTIDLen";
-            this.btSetEPCandTIDLen.Size = new System.Drawing.Size(105, 23);
-            this.btSetEPCandTIDLen.TabIndex = 8;
-            this.btSetEPCandTIDLen.Text = "Set";
-            this.btSetEPCandTIDLen.UseVisualStyleBackColor = true;
-            // 
-            // btGetInformation
-            // 
-            this.btGetInformation.Location = new System.Drawing.Point(338, 82);
-            this.btGetInformation.Name = "btGetInformation";
-            this.btGetInformation.Size = new System.Drawing.Size(175, 40);
-            this.btGetInformation.TabIndex = 81;
-            this.btGetInformation.Text = "Get Information";
-            this.btGetInformation.UseVisualStyleBackColor = true;
-            this.btGetInformation.Click += new System.EventHandler(this.btGetInformation_Click);
-            // 
-            // btDefault
-            // 
-            this.btDefault.Location = new System.Drawing.Point(338, 33);
-            this.btDefault.Name = "btDefault";
-            this.btDefault.Size = new System.Drawing.Size(175, 43);
-            this.btDefault.TabIndex = 80;
-            this.btDefault.Text = "Restore Settings";
-            this.btDefault.UseVisualStyleBackColor = true;
-            this.btDefault.Click += new System.EventHandler(this.btDefault_Click);
+            this.labelModule.AutoSize = true;
+            this.labelModule.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelModule.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.labelModule.Location = new System.Drawing.Point(13, 28);
+            this.labelModule.Name = "labelModule";
+            this.labelModule.Size = new System.Drawing.Size(49, 15);
+            this.labelModule.TabIndex = 78;
+            this.labelModule.Text = "Module";
+            this.labelModule.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // metroTile1
             // 
@@ -1000,8 +805,8 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.TagInventoryButton);
             this.tabPage3.Controls.Add(this.groupBox5);
-            this.tabPage3.Controls.Add(this.groupBox4);
             this.tabPage3.Controls.Add(this.groupBox2);
             this.tabPage3.Location = new System.Drawing.Point(4, 4);
             this.tabPage3.Name = "tabPage3";
@@ -1010,46 +815,57 @@
             this.tabPage3.Text = "RFID";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // TagInventoryButton
+            // 
+            this.TagInventoryButton.Enabled = false;
+            this.TagInventoryButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.TagInventoryButton.Location = new System.Drawing.Point(407, 25);
+            this.TagInventoryButton.Margin = new System.Windows.Forms.Padding(2);
+            this.TagInventoryButton.Name = "TagInventoryButton";
+            this.TagInventoryButton.Size = new System.Drawing.Size(184, 58);
+            this.TagInventoryButton.TabIndex = 82;
+            this.TagInventoryButton.Text = "START INVENTORY";
+            this.TagInventoryButton.UseVisualStyleBackColor = true;
+            this.TagInventoryButton.Click += new System.EventHandler(this.TagInventoryButton_Click);
+            // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.dataGridView1);
-            this.groupBox5.Controls.Add(this.btIventoryG2);
-            this.groupBox5.Location = new System.Drawing.Point(20, 119);
+            this.groupBox5.Controls.Add(this.dataGrideView_RFID);
+            this.groupBox5.Location = new System.Drawing.Point(20, 89);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(643, 293);
+            this.groupBox5.Size = new System.Drawing.Size(726, 323);
             this.groupBox5.TabIndex = 19;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Tag list";
             // 
-            // dataGridView1
+            // dataGrideView_RFID
             // 
-            this.dataGridView1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeColumns = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.ControlLightLight;
-            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGrideView_RFID.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.dataGrideView_RFID.AllowUserToAddRows = false;
+            this.dataGrideView_RFID.AllowUserToDeleteRows = false;
+            this.dataGrideView_RFID.AllowUserToResizeColumns = false;
+            this.dataGrideView_RFID.AllowUserToResizeRows = false;
+            this.dataGrideView_RFID.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.dataGrideView_RFID.BackgroundColor = System.Drawing.SystemColors.ControlLightLight;
+            this.dataGrideView_RFID.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dataGrideView_RFID.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGrideView_RFID.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3,
             this.Column4,
             this.Times_prev,
             this.Times_delta});
-            this.dataGridView1.Location = new System.Drawing.Point(150, 20);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(360, 267);
-            this.dataGridView1.TabIndex = 1;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.dataGrideView_RFID.Location = new System.Drawing.Point(6, 20);
+            this.dataGrideView_RFID.MultiSelect = false;
+            this.dataGrideView_RFID.Name = "dataGrideView_RFID";
+            this.dataGrideView_RFID.ReadOnly = true;
+            this.dataGrideView_RFID.RowHeadersVisible = false;
+            this.dataGrideView_RFID.RowTemplate.Height = 23;
+            this.dataGrideView_RFID.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.dataGrideView_RFID.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGrideView_RFID.Size = new System.Drawing.Size(714, 282);
+            this.dataGrideView_RFID.TabIndex = 88;
             // 
             // Column1
             // 
@@ -1065,6 +881,7 @@
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
             this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column2.Width = 300;
             // 
             // Column3
             // 
@@ -1072,7 +889,6 @@
             this.Column3.Name = "Column3";
             this.Column3.ReadOnly = true;
             this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column3.Width = 50;
             // 
             // Column4
             // 
@@ -1080,158 +896,27 @@
             this.Column4.Name = "Column4";
             this.Column4.ReadOnly = true;
             this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column4.Width = 50;
             // 
             // Times_prev
             // 
             this.Times_prev.HeaderText = "Times_Prev";
             this.Times_prev.Name = "Times_prev";
             this.Times_prev.ReadOnly = true;
-            this.Times_prev.Width = 75;
             // 
             // Times_delta
             // 
             this.Times_delta.HeaderText = "Times_delta";
             this.Times_delta.Name = "Times_delta";
             this.Times_delta.ReadOnly = true;
-            this.Times_delta.Width = 75;
-            // 
-            // btIventoryG2
-            // 
-            this.btIventoryG2.BackColor = System.Drawing.Color.Transparent;
-            this.btIventoryG2.Font = new System.Drawing.Font("SimSun", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btIventoryG2.ForeColor = System.Drawing.Color.DarkBlue;
-            this.btIventoryG2.Location = new System.Drawing.Point(12, 32);
-            this.btIventoryG2.Name = "btIventoryG2";
-            this.btIventoryG2.Size = new System.Drawing.Size(119, 40);
-            this.btIventoryG2.TabIndex = 0;
-            this.btIventoryG2.Text = "Start";
-            this.btIventoryG2.UseVisualStyleBackColor = false;
-            this.btIventoryG2.Click += new System.EventHandler(this.btIventoryG2_Click);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.com_Target);
-            this.groupBox4.Controls.Add(this.label79);
-            this.groupBox4.Controls.Add(this.com_scantime);
-            this.groupBox4.Controls.Add(this.label39);
-            this.groupBox4.Controls.Add(this.com_S);
-            this.groupBox4.Controls.Add(this.label32);
-            this.groupBox4.Controls.Add(this.com_Q);
-            this.groupBox4.Controls.Add(this.label31);
-            this.groupBox4.Location = new System.Drawing.Point(332, 20);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(405, 99);
-            this.groupBox4.TabIndex = 18;
-            this.groupBox4.TabStop = false;
-            // 
-            // com_Target
-            // 
-            this.com_Target.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.com_Target.FormattingEnabled = true;
-            this.com_Target.Items.AddRange(new object[] {
-            "A",
-            "B"});
-            this.com_Target.Location = new System.Drawing.Point(55, 49);
-            this.com_Target.Name = "com_Target";
-            this.com_Target.Size = new System.Drawing.Size(70, 20);
-            this.com_Target.TabIndex = 38;
-            // 
-            // label79
-            // 
-            this.label79.AutoSize = true;
-            this.label79.Location = new System.Drawing.Point(7, 56);
-            this.label79.Name = "label79";
-            this.label79.Size = new System.Drawing.Size(45, 12);
-            this.label79.TabIndex = 37;
-            this.label79.Text = "Target:";
-            // 
-            // com_scantime
-            // 
-            this.com_scantime.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.com_scantime.FormattingEnabled = true;
-            this.com_scantime.Location = new System.Drawing.Point(235, 48);
-            this.com_scantime.Name = "com_scantime";
-            this.com_scantime.Size = new System.Drawing.Size(89, 20);
-            this.com_scantime.TabIndex = 31;
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(131, 52);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(98, 12);
-            this.label39.TabIndex = 30;
-            this.label39.Text = "Max-ScanTime:";
-            // 
-            // com_S
-            // 
-            this.com_S.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.com_S.FormattingEnabled = true;
-            this.com_S.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "2",
-            "3"});
-            this.com_S.Location = new System.Drawing.Point(235, 22);
-            this.com_S.Name = "com_S";
-            this.com_S.Size = new System.Drawing.Size(89, 20);
-            this.com_S.TabIndex = 29;
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(131, 28);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(55, 12);
-            this.label32.TabIndex = 28;
-            this.label32.Text = "Session:";
-            // 
-            // com_Q
-            // 
-            this.com_Q.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.com_Q.FormattingEnabled = true;
-            this.com_Q.Items.AddRange(new object[] {
-            "0",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10",
-            "11",
-            "12",
-            "13",
-            "14",
-            "15"});
-            this.com_Q.Location = new System.Drawing.Point(55, 25);
-            this.com_Q.Name = "com_Q";
-            this.com_Q.Size = new System.Drawing.Size(70, 20);
-            this.com_Q.TabIndex = 27;
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(11, 29);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(18, 12);
-            this.label31.TabIndex = 26;
-            this.label31.Text = "Q:";
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.metroTile2);
             this.groupBox2.Controls.Add(this.label38);
             this.groupBox2.Controls.Add(this.label40);
-            this.groupBox2.Controls.Add(this.rb_tid);
-            this.groupBox2.Controls.Add(this.rb_epc);
             this.groupBox2.Location = new System.Drawing.Point(14, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(303, 107);
+            this.groupBox2.Size = new System.Drawing.Size(318, 71);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             // 
@@ -1250,7 +935,7 @@
             // 
             this.label38.AutoSize = true;
             this.label38.Font = new System.Drawing.Font("굴림", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label38.Location = new System.Drawing.Point(153, 49);
+            this.label38.Location = new System.Drawing.Point(114, 19);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(122, 15);
             this.label38.TabIndex = 5;
@@ -1260,33 +945,11 @@
             // 
             this.label40.AutoSize = true;
             this.label40.Font = new System.Drawing.Font("굴림", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label40.Location = new System.Drawing.Point(272, 49);
+            this.label40.Location = new System.Drawing.Point(265, 17);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(15, 15);
             this.label40.TabIndex = 4;
             this.label40.Text = "0";
-            // 
-            // rb_tid
-            // 
-            this.rb_tid.AutoSize = true;
-            this.rb_tid.Location = new System.Drawing.Point(210, 16);
-            this.rb_tid.Name = "rb_tid";
-            this.rb_tid.Size = new System.Drawing.Size(42, 16);
-            this.rb_tid.TabIndex = 2;
-            this.rb_tid.Text = "TID";
-            this.rb_tid.UseVisualStyleBackColor = true;
-            // 
-            // rb_epc
-            // 
-            this.rb_epc.AutoSize = true;
-            this.rb_epc.Checked = true;
-            this.rb_epc.Location = new System.Drawing.Point(156, 16);
-            this.rb_epc.Name = "rb_epc";
-            this.rb_epc.Size = new System.Drawing.Size(48, 16);
-            this.rb_epc.TabIndex = 1;
-            this.rb_epc.TabStop = true;
-            this.rb_epc.Text = "EPC";
-            this.rb_epc.UseVisualStyleBackColor = true;
             // 
             // tabWiFi
             // 
@@ -1674,16 +1337,6 @@
             this.ComboBox_COM.Size = new System.Drawing.Size(140, 20);
             this.ComboBox_COM.TabIndex = 14;
             // 
-            // timer_answer
-            // 
-            this.timer_answer.Interval = 5;
-            this.timer_answer.Tick += new System.EventHandler(this.timer_answer_Tick);
-            // 
-            // Timer_Intensity
-            // 
-            this.Timer_Intensity.Interval = 1000;
-            this.Timer_Intensity.Tick += new System.EventHandler(this.Timer_Intensity_Tick);
-            // 
             // groupBoxDebug
             // 
             this.groupBoxDebug.Controls.Add(this.pictureBox3);
@@ -1752,7 +1405,8 @@
             this.Controls.Add(this.gpb_Freq);
             this.Controls.Add(this.gpb_Serial);
             this.Name = "Form1";
-            this.Text = "RCNL COAL";
+            this.Text = "RNCL COAL";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.mainTab.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
@@ -1764,21 +1418,10 @@
             this.Theraml_Group.ResumeLayout(false);
             this.Theraml_Group.PerformLayout();
             this.RFID_Group.ResumeLayout(false);
-            this.gpb_rs232.ResumeLayout(false);
-            this.gpb_rs232.PerformLayout();
-            this.gpb_DBM.ResumeLayout(false);
-            this.gpb_DBM.PerformLayout();
-            this.gpb_address.ResumeLayout(false);
-            this.gpb_address.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.gbp_buff.ResumeLayout(false);
-            this.gbp_buff.PerformLayout();
+            this.RFID_Group.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGrideView_RFID)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabWiFi.ResumeLayout(false);
@@ -1808,7 +1451,6 @@
         private System.Windows.Forms.Button btnCalibrate;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Timer tempTimer;
         private System.Windows.Forms.Label lblTemp;
         private System.Windows.Forms.TextBox tempBox;
         private System.Windows.Forms.Button btnSave;
@@ -1829,26 +1471,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TabControl mainTab;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TextBox txtPort;
-        private System.Windows.Forms.Label lblPort;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.GroupBox gbp_buff;
-        private System.Windows.Forms.RadioButton rb496;
-        private System.Windows.Forms.RadioButton rb128;
-        private System.Windows.Forms.Button btGetEPCandTIDLen;
-        private System.Windows.Forms.Button btSetEPCandTIDLen;
-        private System.Windows.Forms.Button btGetInformation;
-        private System.Windows.Forms.Button btDefault;
-        private System.Windows.Forms.GroupBox gpb_DBM;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ComboBox ComboBox_PowerDbm;
-        private System.Windows.Forms.Button BT_DBM;
         private System.Windows.Forms.GroupBox gpb_Freq;
         private System.Windows.Forms.CheckBox CheckBox_SameFre;
         private System.Windows.Forms.RadioButton radioButton_band4;
@@ -1865,42 +1487,20 @@
         private System.Windows.Forms.GroupBox gpb_Serial;
         private System.Windows.Forms.TextBox text_Serial;
         private System.Windows.Forms.Button btSerial;
-        private System.Windows.Forms.GroupBox gpb_address;
-        private System.Windows.Forms.TextBox text_address;
-        private System.Windows.Forms.Button btaddress;
-        private System.Windows.Forms.GroupBox gpb_rs232;
-        private System.Windows.Forms.Button btDisConnect232;
-        private System.Windows.Forms.Button btConnect232;
         internal System.Windows.Forms.ComboBox ComboBox_COM;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.RichTextBox lrtxtLog;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label label80;
         private System.Windows.Forms.TextBox text_target;
         private System.Windows.Forms.CheckBox check_num;
-        private System.Windows.Forms.ComboBox com_Target;
-        private System.Windows.Forms.Label label79;
-        private System.Windows.Forms.ComboBox com_scantime;
-        private System.Windows.Forms.Label label39;
-        private System.Windows.Forms.ComboBox com_S;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.ComboBox com_Q;
-        private System.Windows.Forms.Label label31;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label38;
         private System.Windows.Forms.Label label40;
-        private System.Windows.Forms.RadioButton rb_tid;
-        private System.Windows.Forms.RadioButton rb_epc;
-        private System.Windows.Forms.Button btIventoryG2;
-        private System.Windows.Forms.Timer timer_answer;
-        private System.Windows.Forms.Timer Timer_Intensity;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.GroupBox groupBoxDebug;
         private System.Windows.Forms.Label lblLowTemp;
         private System.Windows.Forms.Label lblHighTmp;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TabPage tabPage4;
         private MetroFramework.Controls.MetroTile tileSETTING;
         private MetroFramework.Controls.MetroTile tileRFID;
@@ -1913,12 +1513,6 @@
         private MetroFramework.Controls.MetroTile metroTile9;
         private MetroFramework.Controls.MetroTile metroTile1;
         private MetroFramework.Controls.MetroTile metroTile2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Times_prev;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Times_delta;
         private System.Windows.Forms.GroupBox Theraml_Group;
         private System.Windows.Forms.GroupBox RFID_Group;
         private System.Windows.Forms.Label label37;
@@ -1939,6 +1533,26 @@
         private System.Windows.Forms.Label lbl_datacount;
         private System.Windows.Forms.Label lbl_progress2;
         private System.Windows.Forms.ProgressBar progressBar2;
+        private System.Windows.Forms.Button ConnectButton;
+        private System.Windows.Forms.ListView TagListView;
+        private System.Windows.Forms.ComboBox comboBoxRfidInventoryOperationSettingsPowerGain;
+        private System.Windows.Forms.Label labelRfidInventoryOperationSettingsPowerGain;
+        private System.Windows.Forms.Label labelBaudrate;
+        private System.Windows.Forms.ComboBox SerialBaudrateComboBox;
+        private System.Windows.Forms.Label labelAntennaPorts;
+        private System.Windows.Forms.ComboBox AntennaPortsComboBox;
+        private System.Windows.Forms.Label labelPort;
+        private System.Windows.Forms.ComboBox SerialPortComboBox;
+        private System.Windows.Forms.Label ModuleValueLabel;
+        private System.Windows.Forms.Label labelModule;
+        private System.Windows.Forms.Button TagInventoryButton;
+        private System.Windows.Forms.DataGridView dataGrideView_RFID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Times_prev;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Times_delta;
     }
 }
 
