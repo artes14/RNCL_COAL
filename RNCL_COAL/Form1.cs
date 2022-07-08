@@ -498,7 +498,7 @@ namespace RNCL_COAL
                     {
                         lbl_progress2.Text = "zip success... preparing to upload";
                     }));
-                    UploadAsync(zipname + ".7z", Path.GetFileName(zipname));
+                    UploadAsync(zipname + ".7z", "portable");
                 }
                 else
                 {
