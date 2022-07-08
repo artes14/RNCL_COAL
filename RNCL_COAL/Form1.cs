@@ -488,6 +488,7 @@ namespace RNCL_COAL
             await save_ultrasonic(saveName_rcd);
             Save_TempData(saveName_csv);
 
+            // restart streaming
             liveStream = true;
             Task task = new Task(delegate {
                 while (capturing) ;
@@ -497,8 +498,7 @@ namespace RNCL_COAL
                     {
                         lbl_progress2.Text = "zip success... preparing to upload";
                     }));
-                    UploadAsync(saveName_csv, "portable");
-                    
+                    UploadAsync(zipname + ".7z", Path.GetFileName(zipname));
                 }
                 else
                 {
@@ -509,7 +509,7 @@ namespace RNCL_COAL
                 //if(System.IO.Directory.Exists(saveName_img) && System.IO.Directory.Exists(saveName_rcd) && System.IO.Directory.Exists(saveName_csv))
 
 
-            // restart streaming
+            
 
             StartStreaming streamData = new StartStreaming(StreamData);
             streamData.BeginInvoke(null, null);
@@ -1247,7 +1247,11 @@ namespace RNCL_COAL
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //RFID
             Disconnect();
+
+            //Thermal
+            DLLHelper.UsbCloseDevice(0);
 
             //if (mSoundUtil != null)
             //{
@@ -1295,15 +1299,8 @@ namespace RNCL_COAL
                     if (rows.Cells[4].Value != null)
                     {
 
-
-
-
-
                         Find_MAX2();
                         //Find_MAX_RSSI();
-
-
-
                     }
 
 
@@ -1311,8 +1308,6 @@ namespace RNCL_COAL
                     break;
                 }
             }
-
-
 
             if (!isonlistview)
             {
@@ -1322,11 +1317,7 @@ namespace RNCL_COAL
                 arr[2] = "1";
                 arr[3] = RSSI;
                 dataGrideView_RFID.Rows.Insert(dataGrideView_RFID.RowCount, arr);
-                //if (rb_epc.Checked) { };
 
-                // comboBox_EPC.Items.Add(sEPC);
-
-                //  NowTag_lbl.Text = sEPC;
             }
 
         }
@@ -1346,14 +1337,11 @@ namespace RNCL_COAL
                 if (dataGrideView_RFID.Rows[i].Cells[5].Value == null) continue;
                 try
                 {
-                    //delta[i] = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[5].Value.ToString());
                     delta[i] = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[5].Value);
                 }
                 catch { }
 
-                //RSSI[i] = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[3].Value.ToString());
                 RSSI[i] = Convert.ToDouble(dataGrideView_RFID.Rows[i].Cells[3].Value.ToString());
-                //EPC[i] = (dataGrideView_RFID.Rows[i].Cells[1].Value.ToString());
                 EPC[i] = (dataGrideView_RFID.Rows[i].Cells[1].Value.ToString());
 
             }
@@ -1424,26 +1412,27 @@ namespace RNCL_COAL
 
         public void Get_RFID_Intensity()
         {
-            while (mRfidInventoryStarted)
+            while (true)
             {
-
-
-                for (int i = 0; i < dataGrideView_RFID.RowCount; i++)
+                if (mRfidInventoryStarted)
                 {
-                    if (dataGrideView_RFID.Rows[i].Cells[4].Value != null)
+                    for (int i = 0; i < dataGrideView_RFID.RowCount; i++)
                     {
-                        int delta = (Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[2].Value.ToString()) - Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[4].Value.ToString()));
-                        dataGrideView_RFID.Rows[i].Cells[5].Value = Convert.ToString(delta);
+                        if (dataGrideView_RFID.Rows[i].Cells[4].Value != null)
+                        {
+                            int delta = (Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[2].Value.ToString()) - Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[4].Value.ToString()));
+                            dataGrideView_RFID.Rows[i].Cells[5].Value = Convert.ToString(delta);
 
+                        }
+
+                        if (dataGrideView_RFID.Rows[i].Cells[2].Value == null) continue;
+                        dataGrideView_RFID.Rows[i].Cells[4].Value = dataGrideView_RFID.Rows[i].Cells[2].Value.ToString();
                     }
 
-                    if (dataGrideView_RFID.Rows[i].Cells[2].Value == null) continue;
-                    dataGrideView_RFID.Rows[i].Cells[4].Value = dataGrideView_RFID.Rows[i].Cells[2].Value.ToString();
-                    //dataGrideView_RFID.Rows[i].Cells[4].Value = Convert.ToInt32(dataGrideView_RFID.Rows[i].Cells[2].Value.ToString());
+                    Thread.Sleep(500);
                 }
-
-                Thread.Sleep(500);
             }
+
 
         }
 
